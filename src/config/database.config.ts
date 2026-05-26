@@ -1,31 +1,31 @@
-<<<<<<< HEAD
-export const DB_NAME = 'online_exam_system';
-=======
 import { DataSource } from 'typeorm';
 import { envConfig } from './env.config';
+import path from 'node:path';
+
+export const DB_NAME = envConfig.DB_NAME;
 
 export class DatabaseConfig {
   private static dataSource: DataSource;
 
   static getDataSource(): DataSource {
     if (!DatabaseConfig.dataSource) {
+      const rootDir = path.join(__dirname, '..');
       DatabaseConfig.dataSource = new DataSource({
-        type: 'mysql',                    
+        type: 'mysql',
         host: envConfig.DB_HOST,
         port: envConfig.DB_PORT,
         username: envConfig.DB_USERNAME,
         password: envConfig.DB_PASSWORD,
-        database: envConfig.DB_NAME,
-        
-        entities: ['src/modules/**/*.entity.ts'],
-        migrations: ['src/database/migrations/*.ts'],
-        
-        synchronize: envConfig.NODE_ENV === 'development',
+        database: DB_NAME,
+
+        entities: [path.join(rootDir, 'modules', '**', '*.entity.{ts,js}')],
+        migrations: [path.join(rootDir, 'database', 'migrations', '*.{ts,js}')],
+
+        synchronize: false,
         logging: envConfig.DB_LOGGING === true,
-        
-        // Extra options for MySQL
+
         charset: 'utf8mb4',
-        timezone: '+07:00',               // Change according to your timezone
+        timezone: '+07:00',
       });
     }
     return DatabaseConfig.dataSource;
@@ -34,7 +34,6 @@ export class DatabaseConfig {
   static async connect(): Promise<void> {
     try {
       const dataSource = this.getDataSource();
-      
       if (!dataSource.isInitialized) {
         await dataSource.initialize();
         console.log('✅ MySQL Database connected successfully');
@@ -46,6 +45,4 @@ export class DatabaseConfig {
   }
 }
 
-// Export for use in repositories
 export const AppDataSource = DatabaseConfig.getDataSource();
->>>>>>> develop

@@ -1,10 +1,10 @@
-import { Router, Request, Response } from 'express';
+import { Router } from 'express';
+import { StudentController } from '../controllers/student.controller';
 
 const router = Router();
+const controller = new StudentController();
 
-router.get('/', (req: Request, res: Response) => {
-	res.json({ message: 'Student module root' });
-});
+router.post('/start',  controller.startQuiz);
+router.post('/submit', controller.submitQuiz);
 
 export default router;
-
