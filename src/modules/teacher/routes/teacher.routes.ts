@@ -1,10 +1,9 @@
-import { Router, Request, Response } from 'express';
+import { Router } from "express";
+import { AuthController } from "../controllers/teacher.controller";
 
 const router = Router();
+const teacherController = new AuthController();
 
-router.get('/teachers', (req: Request, res: Response) => {
-	res.json({ message: 'Teacher module root' });
-});
+router.post("/login", teacherController.teacherLogin);
 
 export default router;
-

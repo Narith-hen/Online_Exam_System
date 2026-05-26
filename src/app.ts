@@ -3,7 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
 
-import authRoutes from './modules/auth/routes/auth.routes';
+import authRoutes from './modules/teacher/routes/teacher.routes';
 import teacherRoutes from './modules/teacher/routes/teacher.routes';
 import studentRoutes from './modules/student/routes/student.routes';
 import dashboardRoutes from './modules/dashboard/routes/dashboard.routes';
@@ -42,9 +42,8 @@ class App {
       });
     });
 
-    this.app.use('/api/auth', authRoutes);
-    this.app.use('/api/teacher', teacherRoutes);
-    this.app.use('/api/student', studentRoutes);
+    this.app.use('/api/teachers', teacherRoutes);
+    this.app.use('/api/students', studentRoutes);
     this.app.use('/api/dashboard', dashboardRoutes);
 
     this.app.get('/health', (req, res) => {
