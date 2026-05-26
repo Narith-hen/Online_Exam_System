@@ -17,7 +17,7 @@ export class DatabaseConfig {
         entities: ['src/modules/**/*.entity.ts'],
         migrations: ['src/database/migrations/*.ts'],
         
-        synchronize: envConfig.NODE_ENV === 'development',
+        synchronize: false,
         logging: envConfig.DB_LOGGING === true,
         
         // Extra options for MySQL
