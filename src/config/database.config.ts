@@ -22,7 +22,12 @@ export class DatabaseConfig {
         
         // Extra options for MySQL
         charset: 'utf8mb4',
-        timezone: '+07:00',               // Change according to your timezone
+        timezone: '+07:00',               
+        extra: {
+          waitForConnections: true,
+          connectionLimit: envConfig.DB_CONNECTION_LIMIT,
+          queueLimit: envConfig.DB_QUEUE_LIMIT,
+        },
       });
     }
     return DatabaseConfig.dataSource;

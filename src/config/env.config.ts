@@ -12,6 +12,8 @@ export const envConfig = {
   DB_USERNAME: process.env.DB_USERNAME || 'root',
   DB_PASSWORD: process.env.DB_PASSWORD || '',
   DB_NAME: process.env.DB_NAME || 'online_exam_system',
+  DB_CONNECTION_LIMIT: Number(process.env.DB_CONNECTION_LIMIT) || 50,
+  DB_QUEUE_LIMIT: Number(process.env.DB_QUEUE_LIMIT) || 0,
   // Enable TypeORM DB logging (set to 'true' to enable)
   DB_LOGGING: process.env.DB_LOGGING === 'true',
 };

@@ -1,9 +1,11 @@
 import { AppDataSource } from "../../../config/database.config";
+import { Result } from "../entities/result.entity";
 import { User } from "../entities/user.entity";
 import { randomUUID } from "crypto";
 
 export class UserRepository {
   private repository = AppDataSource.getRepository(User);
+  private resultRepository = AppDataSource.getRepository(Result);
 
   // login
   async findByEmail(email: string): Promise<User | null> {
@@ -32,5 +34,25 @@ export class UserRepository {
       ...data,
     });
     return this.repository.save(user);
+  }
+
+  // Show Results Student
+  async getAllStudentResults() {
+    return this.resultRepository
+      .createQueryBuilder("result")
+      .leftJoin("students", "student", "student.id = result.studentId")
+      .select([
+        "result.resultId AS resultId",
+        "result.examSessionId AS examSessionId",
+        "result.studentId AS studentId",
+        "student.fullname AS studentName",
+        "result.percentAge AS percentAge",
+        "result.totalScore AS totalScore",
+        "result.isPassed AS isPassed",
+        "result.grade AS grade",
+        "result.createAt AS createAt",
+      ])
+      .orderBy("result.createAt", "DESC")
+      .getRawMany();
   }
 }

@@ -10,7 +10,8 @@
     "dev": "nodemon --exec ts-node src/server.ts",
     "test": "jest",
     "build": "tsc",
-    "start": "node dist/server.js"
+    "start": "node dist/server.js",
+    "load:test:teacher-login": "node scripts/teacher-login-load-test.js"
   },
   "repository": {
     "type": "git",
