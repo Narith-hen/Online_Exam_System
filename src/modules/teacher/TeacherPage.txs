@@ -1,0 +1,430 @@
+// src/teacher/TeacherPage.tsx
+import { useState, FormEvent } from "react";
+
+// ── Types ─────────────────────────────────────────────────
+interface Question {
+  id?: number;
+  questionText: string;
+  options: [string, string, string, string];
+  correctAnswer: string;
+}
+
+interface Exam {
+  id: number;
+  examTitle: string;
+  examCode: string;
+  questions: Question[];
+  createdAt: string;
+}
+
+interface ExamLink {
+  examCode: string;
+  link: string;
+}
+
+// ── API Service ────────────────────────────────────────────
+class TeacherApiService {
+  private static BASE = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
+
+  static async createExam(examTitle: string): Promise<Exam> {
+    const res = await fetch(`${this.BASE}/teacher/exams`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ examTitle }),
+    });
+    if (!res.ok) throw new Error("Failed to create exam");
+    const data = await res.json();
+    return data.exam;
+  }
+
+  static async addQuestion(
+    examId: number,
+    q: Omit<Question, "id">
+  ): Promise<Question> {
+    const res = await fetch(
+      `${this.BASE}/teacher/exams/${examId}/questions`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(q),
+      }
+    );
+    if (!res.ok) throw new Error("Failed to add question");
+    const data = await res.json();
+    return data.question;
+  }
+
+  static async getExams(): Promise<Exam[]> {
+    const res = await fetch(`${this.BASE}/teacher/exams`);
+    if (!res.ok) throw new Error("Failed to fetch exams");
+    return res.json();
+  }
+
+  static async generateLink(examId: number): Promise<ExamLink> {
+    const res = await fetch(
+      `${this.BASE}/teacher/exams/${examId}/link`
+    );
+    if (!res.ok) throw new Error("Failed to generate link");
+    return res.json();
+  }
+
+  static async deleteQuestion(questionId: number): Promise<void> {
+    await fetch(`${this.BASE}/teacher/questions/${questionId}`, {
+      method: "DELETE",
+    });
+  }
+}
+
+// ── Validator ──────────────────────────────────────────────
+class QuestionValidator {
+  static validate(q: Omit<Question, "id">): string | null {
+    if (!q.questionText.trim())
+      return "Question text is required.";
+    if (q.options.some((o) => !o.trim()))
+      return "All 4 options must be filled.";
+    if (!q.correctAnswer)
+      return "Please select the correct answer.";
+    if (!q.options.includes(q.correctAnswer))
+      return "Correct answer must match one of the options.";
+    return null;
+  }
+}
+
+// ── Component ──────────────────────────────────────────────
+type Tab = "create" | "myExams";
+
+export default function TeacherPage() {
+  const [tab, setTab] = useState<Tab>("create");
+
+  // Exam form
+  const [examTitle, setExamTitle] = useState("");
+  const [currentExam, setCurrentExam] = useState<Exam | null>(null);
+  const [examLink, setExamLink] = useState<ExamLink | null>(null);
+
+  // Question form
+  const [showQuestionForm, setShowQuestionForm] = useState(false);
+  const [questionText, setQuestionText] = useState("");
+  const [options, setOptions] = useState<[string,string,string,string]>(["","","",""]);
+  const [correctAnswer, setCorrectAnswer] = useState("");
+
+  // My exams
+  const [myExams, setMyExams] = useState<Exam[]>([]);
+
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  // ── Create exam ──────────────────────────────────────
+  const handleCreateExam = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!examTitle.trim()) { setError("Exam title is required."); return; }
+    setLoading(true);
+    try {
+      const exam = await TeacherApiService.createExam(examTitle);
+      setCurrentExam(exam);
+      setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error");
+    } finally { setLoading(false); }
+  };
+
+  // ── Save question ────────────────────────────────────
+  const handleSaveQuestion = async (e: FormEvent) => {
+    e.preventDefault();
+    const q = { questionText, options, correctAnswer };
+    const validErr = QuestionValidator.validate(q);
+    if (validErr) { setError(validErr); return; }
+    if (!currentExam) return;
+    setLoading(true);
+    try {
+      const saved = await TeacherApiService.addQuestion(currentExam.id, q);
+      setCurrentExam({
+        ...currentExam,
+        questions: [...currentExam.questions, saved],
+      });
+      setQuestionText(""); setOptions(["","","",""]); setCorrectAnswer("");
+      setShowQuestionForm(false); setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error");
+    } finally { setLoading(false); }
+  };
+
+  // ── Generate link ────────────────────────────────────
+  const handleGenerateLink = async () => {
+    if (!currentExam) return;
+    setLoading(true);
+    try {
+      const result = await TeacherApiService.generateLink(currentExam.id);
+      setExamLink(result);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error");
+    } finally { setLoading(false); }
+  };
+
+  // ── Load my exams ─────────────────────────────────────
+  const handleLoadMyExams = async () => {
+    setTab("myExams");
+    setLoading(true);
+    try {
+      const exams = await TeacherApiService.getExams();
+      setMyExams(exams);
+    } catch { setError("Failed to load exams."); }
+    finally { setLoading(false); }
+  };
+
+  const copyLink = () => {
+    if (examLink) navigator.clipboard.writeText(examLink.link);
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Nav */}
+      <header className="border-b bg-white px-6 py-4 flex items-center justify-between">
+        <div className="flex items-center gap-2 font-semibold text-lg">
+          🎓 Online exam system
+        </div>
+        <button className="border px-4 py-2 rounded text-sm">
+          👤 Student view
+        </button>
+      </header>
+
+      {/* Tabs */}
+      <div className="px-6 py-4 flex gap-2 border-b bg-white">
+        <button
+          onClick={() => setTab("create")}
+          className={`px-4 py-2 rounded border text-sm ${tab === "create" ? "bg-gray-200 font-semibold" : ""}`}
+        >
+          Create exam
+        </button>
+        <button
+          onClick={handleLoadMyExams}
+          className={`px-4 py-2 rounded border text-sm ${tab === "myExams" ? "bg-gray-200 font-semibold" : ""}`}
+        >
+          My exams
+        </button>
+      </div>
+
+      <main className="max-w-3xl mx-auto p-6 space-y-6">
+        {error && (
+          <div className="bg-red-50 text-red-700 p-3 rounded border border-red-200 text-sm">
+            {error}
+          </div>
+        )}
+
+        {tab === "create" && (
+          <>
+            {/* Exam details */}
+            <section className="bg-white border rounded-xl p-6">
+              <h2 className="font-semibold text-lg mb-4">Exam details</h2>
+              <form onSubmit={handleCreateExam}>
+                <label className="text-sm text-gray-600 block mb-1">
+                  Exam title
+                </label>
+                <input
+                  placeholder="e.g. Color of Fruits"
+                  className="border w-full p-3 rounded mb-4 text-sm"
+                  value={examTitle}
+                  disabled={!!currentExam}
+                  onChange={(e) => setExamTitle(e.target.value)}
+                />
+                {!currentExam && (
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="bg-blue-600 text-white px-5 py-2 rounded text-sm disabled:opacity-50"
+                  >
+                    {loading ? "Creating…" : "Create exam"}
+                  </button>
+                )}
+                {currentExam && (
+                  <p className="text-green-600 text-sm">
+                    ✓ Exam created — code:{" "}
+                    <strong>{currentExam.examCode}</strong>
+                  </p>
+                )}
+              </form>
+            </section>
+
+            {/* Questions */}
+            {currentExam && (
+              <section>
+                <h2 className="font-semibold text-lg mb-3">Questions</h2>
+
+                {/* Question form */}
+                {showQuestionForm ? (
+                  <div className="bg-white border-2 border-blue-400 rounded-xl p-6 mb-4">
+                    <div className="flex justify-between items-center mb-4">
+                      <p className="text-blue-600 font-semibold text-sm">
+                        ✏️ New question
+                      </p>
+                      <button
+                        onClick={() => setShowQuestionForm(false)}
+                        className="border px-3 py-1 rounded text-sm"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                    <form onSubmit={handleSaveQuestion} className="space-y-4">
+                      <div>
+                        <label className="text-sm text-gray-600 block mb-1">
+                          Question text
+                        </label>
+                        <input
+                          placeholder="e.g. What is the capital of France?"
+                          className="border w-full p-3 rounded text-sm"
+                          value={questionText}
+                          onChange={(e) => setQuestionText(e.target.value)}
+                        />
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        {options.map((opt, i) => (
+                          <div key={i}>
+                            <label className="text-sm text-gray-600 block mb-1">
+                              Option {i + 1}
+                            </label>
+                            <input
+                              placeholder={`Option ${i + 1}`}
+                              className="border w-full p-3 rounded text-sm"
+                              value={opt}
+                              onChange={(e) => {
+                                const updated = [...options] as [string,string,string,string];
+                                updated[i] = e.target.value;
+                                setOptions(updated);
+                              }}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                      <div>
+                        <label className="text-sm text-gray-600 block mb-1">
+                          Correct answer
+                        </label>
+                        <select
+                          className="border w-full p-3 rounded text-sm"
+                          value={correctAnswer}
+                          onChange={(e) => setCorrectAnswer(e.target.value)}
+                        >
+                          <option value="">— Select correct option —</option>
+                          {options.filter(Boolean).map((opt, i) => (
+                            <option key={i} value={opt}>{opt}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="flex gap-3">
+                        <button
+                          type="submit"
+                          disabled={loading}
+                          className="border px-4 py-2 rounded text-sm disabled:opacity-50"
+                        >
+                          ✓ Save question
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setShowQuestionForm(false)}
+                          className="border px-4 py-2 rounded text-sm"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setShowQuestionForm(true)}
+                    className="border-2 border-dashed border-gray-300 w-full py-4 rounded-xl text-sm text-gray-500 hover:border-blue-400 hover:text-blue-500 mb-4"
+                  >
+                    + Add question
+                  </button>
+                )}
+
+                {/* Question list */}
+                {currentExam.questions.map((q, idx) => (
+                  <div key={q.id ?? idx} className="bg-white border rounded-xl p-4 mb-3">
+                    <p className="font-semibold text-sm mb-2">
+                      {idx + 1}. {q.questionText}
+                    </p>
+                    <div className="grid grid-cols-2 gap-2">
+                      {q.options.map((opt, i) => (
+                        <p
+                          key={i}
+                          className={`text-sm px-3 py-1 rounded border ${
+                            opt === q.correctAnswer
+                              ? "border-green-400 bg-green-50 text-green-700"
+                              : "text-gray-600"
+                          }`}
+                        >
+                          {opt === q.correctAnswer ? "✓ " : "• "}{opt}
+                        </p>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+
+                {/* Generate link */}
+                {currentExam.questions.length > 0 && (
+                  <div className="mt-4">
+                    <button
+                      onClick={handleGenerateLink}
+                      disabled={loading}
+                      className="bg-green-600 text-white px-5 py-2 rounded text-sm disabled:opacity-50"
+                    >
+                      {loading ? "Generating…" : "Generate exam link"}
+                    </button>
+                    {examLink && (
+                      <div className="mt-4 border p-4 rounded-xl bg-white">
+                        <p className="font-semibold text-sm mb-2">
+                          Student link
+                        </p>
+                        <div className="flex gap-2">
+                          <input
+                            readOnly
+                            value={examLink.link}
+                            className="border p-2 flex-1 rounded text-sm bg-gray-50"
+                          />
+                          <button
+                            onClick={copyLink}
+                            className="bg-purple-600 text-white px-4 rounded text-sm"
+                          >
+                            Copy
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </section>
+            )}
+          </>
+        )}
+
+        {/* My exams tab */}
+        {tab === "myExams" && (
+          <section>
+            <h2 className="font-semibold text-lg mb-4">My exams</h2>
+            {loading && <p className="text-gray-500 text-sm">Loading…</p>}
+            {myExams.map((exam) => (
+              <div
+                key={exam.id}
+                className="bg-white border rounded-xl p-4 mb-4"
+              >
+                <div className="flex justify-between items-start">
+                  <div>
+                    <p className="font-semibold">{exam.examTitle}</p>
+                    <p className="text-sm text-gray-500">
+                      Code: {exam.examCode} · {exam.questions.length} questions
+                    </p>
+                  </div>
+                  <span className="text-xs bg-blue-50 text-blue-600 px-3 py-1 rounded-full border border-blue-200">
+                    {new Date(exam.createdAt).toLocaleDateString()}
+                  </span>
+                </div>
+              </div>
+            ))}
+            {!loading && myExams.length === 0 && (
+              <p className="text-gray-500 text-sm">No exams yet.</p>
+            )}
+          </section>
+        )}
+      </main>
+    </div>
+  );
+}
