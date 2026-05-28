@@ -1,37 +1,38 @@
-// Result.entity.ts
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn } from 'typeorm';
-import { ExamSession } from './ExamSession.entity';
-import { Student } from './student.entity';
+// entities/Result.entity.ts
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, JoinColumn } from 'typeorm';
 
 @Entity('results')
 export class Result {
-  @PrimaryGeneratedColumn()
-  resultId!: number;
+  @PrimaryGeneratedColumn('uuid')
+  resultId!: string;
 
-  @Column()
-  examSessionId!: number;
-
-  @Column()
+  @Column({ type: 'int' })
   studentId!: number;
 
-  @Column('float')
+  @Column({ type: 'char', length: 36 })
+  examSessionId!: string;
+
+  @Column({ type: 'decimal', precision: 5, scale: 2 })
   percentAge!: number;
 
-  @Column()
+  @Column({ type: 'decimal', precision: 8, scale: 2 })
   totalScore!: number;
 
-  @Column()
+  @Column({ type: 'tinyint' })
   isPassed!: boolean;
 
   @Column({ type: 'varchar', length: 10 })
   grade!: string;
+ 
+  @ManyToOne('ExamSession', 'results')
+  @JoinColumn({ name: 'examSessionId' })  // ← add this
+  session!: any;
 
-  @ManyToOne(() => ExamSession, (session) => session.results)
-  examSession!: ExamSession;
-
-  @ManyToOne(() => Student, (student) => student.results)
-  student!: Student;
+  @ManyToOne('Student', 'results')
+  @JoinColumn({ name: 'studentId' })      // ← add this
+  student!: any;
 
   @CreateDateColumn()
-  createdAt!: Date;
+  createAt!: Date;
+ 
 }

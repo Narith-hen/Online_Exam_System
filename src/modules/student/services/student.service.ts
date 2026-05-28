@@ -23,25 +23,23 @@ export class StudentService {
     return student;
   }
 
-  async startQuiz(dto: StartQuizDto) {
-    const student = await this.repo.findStudentById(dto.studentId);
-    if (!student) throw new Error('Student not found');
+// services/student.service.ts
+async startQuiz(dto: StartQuizDto) {
+  const student = await this.repo.findStudentById(dto.studentId);
+  if (!student) throw new Error('Student not found');
 
-    const active = await this.repo.findActiveSession(dto.studentId);
-    if (active) throw new Error('You already have a quiz in progress');
-
-    return this.repo.createSession(dto.studentId);
-  }
+  // ← remove active session check, always create new session
+  return this.repo.createSession(dto.studentId, dto.examId);
+}
 
   async submitQuiz(dto: SubmitQuizDto) {
     const session = await this.repo.findSessionById(dto.examSessionId);
     if (!session)                       throw new Error('Session not found');
     if (session.status === 'submitted') throw new Error('Quiz already submitted');
 
-    await this.repo.saveAnswers(dto.examSessionId, dto.answers);
+    await this.repo.saveAnswers(dto.examSessionId, session.studentId, dto.answers);
 
-    // ── Scoring logic ──────────────────────────────────────────────────────
-    const correct    = dto.answers.filter(a => a.selectedOption === 'correct').length;
+    const correct    = dto.answers.filter(a => a.isCorrect).length;
     const total      = dto.answers.length;
     const percentAge = (correct / total) * 100;
     const isPassed   = percentAge >= 50;
@@ -64,7 +62,7 @@ export class StudentService {
     return result;
   }
 
-  async getResult(examSessionId: number) {
+  async getResult(examSessionId: string) {
     const result = await this.repo.findResultBySession(examSessionId);
     if (!result) throw new Error('Result not found');
     return result;

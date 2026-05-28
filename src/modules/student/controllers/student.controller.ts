@@ -17,47 +17,48 @@ export class StudentController {
   }
 
   async login(req: Request, res: Response): Promise<void> {
-    try {
-      const result = await this.studentService.login(new StudentLoginDto(req.body));
-      res.status(200).json({ success: true, data: result });
-    } catch (e: any) {
-      res.status(400).json({ success: false, message: e.message });
-    }
+  try {
+    const result = await this.studentService.login(new StudentLoginDto(req.body));
+    res.status(200).json({ success: true, message: 'Student login successfully', data: result });
+  } catch (e: any) {
+    res.status(400).json({ success: false, message: e.message });
   }
+}
 
-  async startQuiz(req: Request, res: Response): Promise<void> {
-    try {
-      const result = await this.studentService.startQuiz(new StartQuizDto(req.body));
-      res.status(201).json({ success: true, data: result });
-    } catch (e: any) {
-      res.status(400).json({ success: false, message: e.message });
-    }
+async startQuiz(req: Request, res: Response): Promise<void> {
+  try {
+    const result = await this.studentService.startQuiz(new StartQuizDto(req.body));
+    res.status(201).json({ success: true, message: 'Quiz started successfully', data: result });
+  } catch (e: any) {
+    res.status(400).json({ success: false, message: e.message });
   }
+}
 
-  async submitQuiz(req: Request, res: Response): Promise<void> {
-    try {
-      const result = await this.studentService.submitQuiz(new SubmitQuizDto(req.body));
-      res.status(200).json({ success: true, data: result });
-    } catch (e: any) {
-      res.status(400).json({ success: false, message: e.message });
-    }
+async submitQuiz(req: Request, res: Response): Promise<void> {
+  try {
+    const result = await this.studentService.submitQuiz(new SubmitQuizDto(req.body));
+    res.status(200).json({ success: true, message: 'Quiz submitted successfully', data: result });
+  } catch (e: any) {
+    res.status(400).json({ success: false, message: e.message });
   }
+}
 
-  async getResult(req: Request, res: Response): Promise<void> {
-    try {
-      const result = await this.studentService.getResult(Number(req.params.examSessionId));
-      res.status(200).json({ success: true, data: result });
-    } catch (e: any) {
-      res.status(400).json({ success: false, message: e.message });
-    }
+async getResult(req: Request, res: Response): Promise<void> {
+  try {
+    const examSessionId = req.params.examSessionId as string;
+    const result = await this.studentService.getResult(examSessionId);
+    res.status(200).json({ success: true, message: 'Result retrieved successfully', data: result });
+  } catch (e: any) {
+    res.status(400).json({ success: false, message: e.message });
   }
+}
 
-  async getMyResults(req: Request, res: Response): Promise<void> {
-    try {
-      const results = await this.studentService.getResultsByStudent(Number(req.params.studentId));
-      res.status(200).json({ success: true, data: results });
-    } catch (e: any) {
-      res.status(400).json({ success: false, message: e.message });
-    }
+async getMyResults(req: Request, res: Response): Promise<void> {
+  try {
+    const results = await this.studentService.getResultsByStudent(Number(req.params.studentId));
+    res.status(200).json({ success: true, message: 'Results retrieved successfully', data: results });
+  } catch (e: any) {
+    res.status(400).json({ success: false, message: e.message });
   }
+}
 }

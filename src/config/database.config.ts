@@ -7,7 +7,6 @@ import { Student } from '../modules/student/entities/student.entity';
 import { ExamSession } from '../modules/student/entities/ExamSession.entity';
 import { Answer } from '../modules/student/entities/Answer.entity';
 import { Result } from '../modules/student/entities/Result.entity';
-import { Exam } from '../modules/student/entities/Exam.entity';
 
 export const DB_NAME = envConfig.DB_NAME;
 
@@ -25,7 +24,7 @@ export class DatabaseConfig {
         password: envConfig.DB_PASSWORD,
         database: DB_NAME,
 
-        entities: [Student, ExamSession, Answer, Result, Exam],
+        entities: [Student, ExamSession, Answer, Result],
         migrations: [path.join(rootDir, 'database', 'migrations', '*.{ts,js}')],
 
         synchronize: false,

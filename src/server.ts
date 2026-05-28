@@ -1,6 +1,5 @@
+import 'reflect-metadata'; // ← must be first line
 import app from './app';
-import 'reflect-metadata';
-import express from "express"
 import { envConfig } from './config/env.config';
 import { DatabaseConfig } from './config/database.config';
 
@@ -10,7 +9,6 @@ async function bootstrap(): Promise<void> {
   try {
     await DatabaseConfig.connect();
     console.log('Database connected successfully');
-
     app.listen(port, () => {
       console.log(`Server running on http://localhost:${port}`);
     });

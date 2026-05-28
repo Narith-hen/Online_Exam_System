@@ -1,17 +1,12 @@
-// routes/student.routes.ts
 import { Router } from 'express';
 import { StudentController } from '../controllers/student.controller';
 
-const router     = Router();
-const controller = new StudentController();
+const router = Router();
 
-// Specific routes MUST come first (before parameterized routes)
-router.post('/login', controller.login);
-router.post('/quiz/start', controller.startQuiz);
-router.post('/quiz/submit', controller.submitQuiz);
-router.get('/quiz/result/:examSessionId', controller.getResult);
-
-// General parameterized routes come LAST
-router.get('/:studentId/results', controller.getMyResults);
+router.post('/login',                    (req, res) => new StudentController().login(req, res));
+router.post('/quiz/start',               (req, res) => new StudentController().startQuiz(req, res));
+router.post('/quiz/submit',              (req, res) => new StudentController().submitQuiz(req, res));
+router.get('/quiz/result/:examSessionId',(req, res) => new StudentController().getResult(req, res));
+router.get('/:studentId/results',        (req, res) => new StudentController().getMyResults(req, res));
 
 export default router;

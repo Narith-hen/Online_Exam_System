@@ -29,11 +29,11 @@ export class StudentRepository {
       .getOne();
   }
 
-  async findStudentById(studentId: number): Promise<Student | null> {
+  async findStudentById(id: number): Promise<Student | null> {
     return this.studentRepo
       .createQueryBuilder('student')
       .select(['student.id', 'student.fullname', 'student.class', 'student.email'])
-      .where('student.id = :studentId', { studentId })
+      .where('student.id = :id', { id })
       .getOne();
   }
 
@@ -43,53 +43,61 @@ export class StudentRepository {
 
   // ── Session ───────────────────────────────────────────────────────────────
 
-  async findSessionById(sessionId: number): Promise<ExamSession | null> {
+  async findSessionById(examSessionId: string): Promise<ExamSession | null> {
     return this.sessionRepo
       .createQueryBuilder('session')
-      .select(['session.id', 'session.status', 'session.studentId', 'session.createdAt'])
-      .leftJoin('session.student', 'student')
-      .addSelect(['student.id', 'student.fullname', 'student.email'])
-      .where('session.id = :sessionId', { sessionId })
+      .select(['session.examSessionId', 'session.status', 'session.studentId', 'session.startedAt'])
+      .where('session.examSessionId = :examSessionId', { examSessionId })
       .getOne();
   }
 
   async findActiveSession(studentId: number): Promise<ExamSession | null> {
     return this.sessionRepo
       .createQueryBuilder('session')
-      .select(['session.id', 'session.status'])
+      .select(['session.examSessionId', 'session.status'])
       .where('session.studentId = :studentId', { studentId })
       .andWhere('session.status = :status', { status: 'in_progress' })
       .getOne();
   }
 
-  async createSession(studentId: number): Promise<ExamSession> {
-    return this.sessionRepo.save(
-      this.sessionRepo.create({ studentId, status: 'in_progress' })
-    );
-  }
+  async createSession(studentId: number, examId: string): Promise<ExamSession> {
+  return this.sessionRepo.save(
+    this.sessionRepo.create({
+      studentId,
+      examId,
+      status:    'in_progress',
+      startedAt: new Date(),
+      expiresAt: new Date(Date.now() + 60 * 60 * 1000), // 1 hour expiry
+    })
+  );
+}
 
-  async updateSessionStatus(sessionId: number, status: string): Promise<void> {
+  async updateSessionStatus(examSessionId: string, status: string): Promise<void> {
     await this.sessionRepo
       .createQueryBuilder()
       .update(ExamSession)
-      .set({ status })
-      .where('id = :sessionId', { sessionId })
+      .set({ status, submittedAt: new Date() })
+      .where('examSessionId = :examSessionId', { examSessionId })
       .execute();
   }
 
   // ── Answer ────────────────────────────────────────────────────────────────
 
-  async saveAnswers(examSessionId: number, answers: { questionText: string; selectedOption: string }[]): Promise<void> {
-    const records = answers.map(a => this.answerRepo.create({ ...a, examSessionId }));
+  async saveAnswers(
+    examSessionId: string,
+    studentId: number,
+    answers: { questionId: string; studentAnswer: string; isCorrect: boolean; answerText: string }[]
+  ): Promise<void> {
+    const records = answers.map(a => this.answerRepo.create({ ...a, examSessionId, studentId }));
     await this.answerRepo.save(records);
   }
 
   // ── Result ────────────────────────────────────────────────────────────────
 
-  async findResultBySession(examSessionId: number): Promise<Result | null> {
+  async findResultBySession(examSessionId: string): Promise<Result | null> {
     return this.resultRepo
       .createQueryBuilder('result')
-      .select(['result.resultId', 'result.percentAge', 'result.totalScore', 'result.isPassed', 'result.grade', 'result.createdAt'])
+      .select(['result.resultId', 'result.percentAge', 'result.totalScore', 'result.isPassed', 'result.grade', 'result.createAt'])
       .leftJoin('result.student', 'student')
       .addSelect(['student.id', 'student.fullname', 'student.class', 'student.email'])
       .where('result.examSessionId = :examSessionId', { examSessionId })
@@ -99,11 +107,9 @@ export class StudentRepository {
   async findResultsByStudent(studentId: number): Promise<Result[]> {
     return this.resultRepo
       .createQueryBuilder('result')
-      .select(['result.resultId', 'result.percentAge', 'result.totalScore', 'result.isPassed', 'result.grade', 'result.createdAt'])
-      .leftJoin('result.examSession', 'examSession')
-      .addSelect(['examSession.id', 'examSession.createdAt'])
+      .select(['result.resultId', 'result.percentAge', 'result.totalScore', 'result.isPassed', 'result.grade', 'result.createAt'])
       .where('result.studentId = :studentId', { studentId })
-      .orderBy('result.createdAt', 'DESC')
+      .orderBy('result.createAt', 'DESC')
       .getMany();
   }
 

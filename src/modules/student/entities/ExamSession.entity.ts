@@ -1,35 +1,35 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, CreateDateColumn } from 'typeorm';
-import { Student } from './student.entity';
-import { Exam } from './Exam.entity';
-import { Answer } from './Answer.entity';
-import { Result } from './Result.entity';
+// entities/ExamSession.entity.ts
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 
-@Entity('exam_sessions')
+@Entity('examsession')
 export class ExamSession {
-  @PrimaryGeneratedColumn()
-  id!: number;
+  @PrimaryGeneratedColumn('uuid')
+  examSessionId!: string;
 
-  @Column({ default: 'in_progress' })
-  status!: string;
+  @Column({ type: 'char', length: 36 })
+  examId!: string;
 
-  @Column()
+  @Column({ type: 'int' })
   studentId!: number;
 
-  @Column()
-  examId!: number;
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  deviceFingerPrint!: string;
 
-  @ManyToOne(() => Student, (student) => student.sessions)
-  student!: Student;
+  @Column({ type: 'enum', enum: ['pending', 'in_progress', 'submitted', 'expired'], default: 'pending' })
+  status!: string;
 
-  @ManyToOne(() => Exam, (exam) => exam.sessions)
-  exam!: Exam;
+  @Column({ nullable: true })
+  startedAt!: Date;
 
-  @OneToMany(() => Answer, (answer) => answer.session)
-  answers!: Answer[];
+  @Column({ nullable: true })
+  expiresAt!: Date;
 
-  @OneToMany(() => Result, (result) => result.examSession)
-  results!: Result[];
+  @Column({ nullable: true })
+  submittedAt!: Date;
 
-  @CreateDateColumn()
-  createdAt!: Date;
+  @OneToMany('Answer', 'session')
+  answers!: any[];
+
+  @OneToMany('Result', 'session')
+  results!: any[];
 }

@@ -1,21 +1,30 @@
-// Answer.entity.ts
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
-import { ExamSession } from './ExamSession.entity';
+// entities/Answer.entity.ts
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 
 @Entity('answers')
 export class Answer {
-  @PrimaryGeneratedColumn()
-  id!: number;
+  @PrimaryGeneratedColumn('uuid')
+  answerId!: string;
 
-  @Column()
-  questionText!: string;
+  @Column({ type: 'char', length: 36 })
+  examSessionId!: string;
 
-  @Column()
-  selectedOption!: string;
+  @Column({ type: 'int' })
+  studentId!: number;
 
-  @Column()
-  examSessionId!: number;
+  @Column({ type: 'char', length: 36 })
+  questionId!: string;
 
-  @ManyToOne(() => ExamSession, (session) => session.answers)
-  session!: ExamSession;
+  @Column({ type: 'text', nullable: true })
+  studentAnswer!: string;
+
+  @Column({ type: 'text', nullable: true })
+  answerText!: string;
+
+  @Column({ type: 'tinyint', default: 0 })
+  isCorrect!: boolean;
+
+  @ManyToOne('ExamSession', 'answers')
+  @JoinColumn({ name: 'examSessionId' })  // ← add this
+  session!: any;
 }

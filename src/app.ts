@@ -46,6 +46,9 @@ class App {
     this.app.use('/api/teacher', teacherRoutes);
     this.app.use('/api/student', studentRoutes);
     this.app.use('/api/dashboard', dashboardRoutes);
+    
+    
+
 
     this.app.get('/health', (req, res) => {
       res.status(200).json({
