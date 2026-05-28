@@ -5,5 +5,6 @@ const router = Router();
 const teacherController = new AuthController();
 
 router.post("/login", teacherController.teacherLogin);
+router.post("/create", teacherController.teacherRegister);
 
 export default router;

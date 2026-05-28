@@ -1,9 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import { Entity, PrimaryColumn, Column } from "typeorm";
 
 @Entity('users')   // Make sure table name is correct
 export class User {
-    @PrimaryGeneratedColumn({ name: 'userId' })
-    userId!: number;
+    @PrimaryColumn({ name: 'userId', type: 'char', length: 36 })
+    userId!: string;
 
     @Column({ name: 'username' })
     username!: string;
@@ -15,7 +15,7 @@ export class User {
     passwordHash!: string;
 
     @Column({ name: 'roleId' })
-    roleId!: string;        // or string if it's enum
+    roleId!: string;     
 
     @Column({ name: 'isActive', default: true })
     isActive!: boolean;

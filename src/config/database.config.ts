@@ -14,8 +14,8 @@ export class DatabaseConfig {
         password: envConfig.DB_PASSWORD,
         database: envConfig.DB_NAME,
         
-        entities: ['src/modules/**/*.entity.ts'],
-        migrations: ['src/database/migrations/*.ts'],
+        entities: [`${__dirname}/../modules/**/*.entity.{ts,js}`],
+        migrations: [`${__dirname}/../database/migrations/*.{ts,js}`],
         
         synchronize: false,
         logging: envConfig.DB_LOGGING === true,
