@@ -1,40 +1,35 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, CreateDateColumn, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, CreateDateColumn } from 'typeorm';
+import { Student } from './student.entity';
 import { Exam } from './Exam.entity';
 import { Answer } from './Answer.entity';
 import { Result } from './Result.entity';
-
-export enum SessionStatus {
-  IN_PROGRESS = 'in_progress',
-  COMPLETED = 'completed',
-}
 
 @Entity('exam_sessions')
 export class ExamSession {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column()
-  fullname!: string;
+  @Column({ default: 'in_progress' })
+  status!: string;
 
   @Column()
-  email!: string;
+  studentId!: number;
 
-  @Column({ type: 'enum', enum: SessionStatus, default: SessionStatus.IN_PROGRESS })
-  status!: SessionStatus;
+  @Column()
+  examId!: number;
 
-  @CreateDateColumn()
-  startedAt!: Date;
+  @ManyToOne(() => Student, (student) => student.sessions)
+  student!: Student;
 
-  @Column({ nullable: true })
-  completedAt!: Date;
-
-  @ManyToOne(() => Exam, (exam) => exam.sessions, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'examId' })
+  @ManyToOne(() => Exam, (exam) => exam.sessions)
   exam!: Exam;
 
-  @OneToMany(() => Answer, (a) => a.session, { cascade: true, onDelete: 'CASCADE' })
+  @OneToMany(() => Answer, (answer) => answer.session)
   answers!: Answer[];
 
-  @OneToMany(() => Result, (r) => r.session, { cascade: true, onDelete: 'CASCADE' })
+  @OneToMany(() => Result, (result) => result.examSession)
   results!: Result[];
+
+  @CreateDateColumn()
+  createdAt!: Date;
 }

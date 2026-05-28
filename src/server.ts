@@ -1,4 +1,6 @@
 import app from './app';
+import 'reflect-metadata';
+import express from "express"
 import { envConfig } from './config/env.config';
 import { DatabaseConfig } from './config/database.config';
 

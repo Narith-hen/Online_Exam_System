@@ -1,32 +1,37 @@
+// Result.entity.ts
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn } from 'typeorm';
 import { ExamSession } from './ExamSession.entity';
+import { Student } from './student.entity';
 
 @Entity('results')
 export class Result {
   @PrimaryGeneratedColumn()
-  id!: number;
+  resultId!: number;
 
   @Column()
-  fullname!: string;
+  examSessionId!: number;
 
   @Column()
-  email!: string;
+  studentId!: number;
+
+  @Column('float')
+  percentAge!: number;
 
   @Column()
-  score!: number;
+  totalScore!: number;
 
   @Column()
-  totalQuestions!: number;
+  isPassed!: boolean;
 
-  @Column()
-  percentage!: number;
+  @Column({ type: 'varchar', length: 10 })
+  grade!: string;
 
-  @Column({ default: false })
-  passed!: boolean;
+  @ManyToOne(() => ExamSession, (session) => session.results)
+  examSession!: ExamSession;
+
+  @ManyToOne(() => Student, (student) => student.results)
+  student!: Student;
 
   @CreateDateColumn()
-  submittedAt!: Date;
-
-  @ManyToOne(() => ExamSession, (s) => s.results)
-  session!: ExamSession;
+  createdAt!: Date;
 }

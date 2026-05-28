@@ -1,24 +1,13 @@
-export class AnswerDto {
-  questionId: number;
-  selectedAnswer: string;
-
-  constructor(data: any) {
-    this.questionId     = data.questionId;
-    this.selectedAnswer = data.selectedAnswer;
-  }
-}
-
+// dto/submit-quiz.dto.ts
 export class SubmitQuizDto {
-  sessionId: number;
-  answers: AnswerDto[];
+  examSessionId: number;
+  answers: { questionText: string; selectedOption: string }[];
 
-  constructor(data: any) {
-    this.sessionId = data.sessionId;
-    this.answers   = (data.answers || []).map((a: any) => new AnswerDto(a));
-  }
-
-  validate(): void {
-    if (!this.sessionId)          throw new Error('sessionId is required');
-    if (!this.answers.length)     throw new Error('answers are required');
+  constructor(body: any) {
+    if (!body.examSessionId) throw new Error('examSessionId is required');
+    if (!Array.isArray(body.answers) || body.answers.length === 0)
+      throw new Error('answers must be a non-empty array');
+    this.examSessionId = Number(body.examSessionId);
+    this.answers       = body.answers;
   }
 }

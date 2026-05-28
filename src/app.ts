@@ -6,11 +6,9 @@ import compression from 'compression';
 import authRoutes from './modules/auth/routes/auth.routes';
 import teacherRoutes from './modules/teacher/routes/teacher.routes';
 import studentRoutes from './modules/student/routes/student.routes';
-import quizRoutes from './modules/student/routes/quiz.routes';
 import dashboardRoutes from './modules/dashboard/routes/dashboard.routes';
 
 import errorInterceptor from './shared/interceptors/error.interceptor';
-import responseInterceptor from './shared/interceptors/response.interceptor';
 import loggerMiddleware from './shared/middlewares/logger.middleware';
 
 class App {
@@ -32,6 +30,7 @@ class App {
     this.app.use(express.urlencoded({ extended: true }));
 
     this.app.use(loggerMiddleware);
+    // responseInterceptor temporarily disabled - causing 404 issues
   }
 
   private initializeRoutes(): void {
@@ -46,7 +45,6 @@ class App {
     this.app.use('/api/auth', authRoutes);
     this.app.use('/api/teacher', teacherRoutes);
     this.app.use('/api/student', studentRoutes);
-    this.app.use('/api/quiz', quizRoutes);
     this.app.use('/api/dashboard', dashboardRoutes);
 
     this.app.get('/health', (req, res) => {
@@ -55,10 +53,15 @@ class App {
         timestamp: new Date().toISOString(),
       });
     });
+
+    // 404 handler - must be after all routes
+    this.app.use((req, res) => {
+      res.status(404).json({ error: 'Route not found' });
+    });
   }
 
   private initializeInterceptors(): void {
-    this.app.use(responseInterceptor);
+    // Error interceptor MUST be last
     this.app.use(errorInterceptor);
   }
 }
