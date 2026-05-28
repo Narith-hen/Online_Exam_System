@@ -5,6 +5,7 @@ import compression from 'compression';
 
 import authRoutes from './modules/auth/routes/auth.routes';
 import teacherRoutes from './modules/teacher/routes/teacher.routes';
+import teacherExamRoutes from './modules/teacher/routes/teacherExam.routes';
 import studentRoutes from './modules/student/routes/student.routes';
 import dashboardRoutes from './modules/dashboard/routes/dashboard.routes';
 
@@ -43,7 +44,8 @@ class App {
     });
 
     this.app.use('/api/auth', authRoutes);
-    this.app.use('/api/teacher', teacherRoutes);
+    this.app.use('/api/teachers', teacherRoutes);
+    this.app.use('/api/teachers/exams', teacherExamRoutes);
     this.app.use('/api/student', studentRoutes);
     this.app.use('/api/dashboard', dashboardRoutes);
 
