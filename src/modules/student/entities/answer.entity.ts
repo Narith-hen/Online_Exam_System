@@ -25,6 +25,6 @@ export class Answer {
   isCorrect!: boolean;
 
   @ManyToOne('ExamSession', 'answers')
-  @JoinColumn({ name: 'examSessionId' })  // ← add this
+  @JoinColumn({ name: 'examSessionId' })
   session!: any;
 }

@@ -11,31 +11,44 @@ export class StudentService {
     this.repo = new StudentRepository();
   }
 
+  // services/student.service.ts
   async login(dto: StudentLoginDto) {
-    let student = await this.repo.findStudentByEmail(dto.email);
-    if (!student) {
-      student = await this.repo.createStudent({
-        fullname: dto.fullname,
-        class:    dto.class,
-        email:    dto.email,
-      });
-    }
+  let student = await this.repo.findStudentByEmail(dto.email);
+
+  if (student) {
+    // ── existing student — verify fullname and class match ─────────────
+    if (student.fullname.toLowerCase() !== dto.fullname.toLowerCase())
+      throw new Error('fullname does not match our records');
+    if (student.class.toLowerCase() !== dto.class.toLowerCase())
+      throw new Error('class does not match our records');
     return student;
   }
 
-// services/student.service.ts
-async startQuiz(dto: StartQuizDto) {
-  const student = await this.repo.findStudentById(dto.studentId);
-  if (!student) throw new Error('Student not found');
+  // ── new student — create only if all fields are valid ─────────────────
+  student = await this.repo.createStudent({
+    fullname: dto.fullname,
+    class:    dto.class,
+    email:    dto.email,
+  });
 
-  // ← remove active session check, always create new session
-  return this.repo.createSession(dto.studentId, dto.examId);
-}
+  return student;
+ }
+
+  async startQuiz(dto: StartQuizDto) {
+    const student = await this.repo.findStudentById(dto.studentId);
+    if (!student) throw new Error('Student not found');
+
+    return this.repo.createSession(dto.studentId, dto.examId);
+  }
 
   async submitQuiz(dto: SubmitQuizDto) {
     const session = await this.repo.findSessionById(dto.examSessionId);
     if (!session)                       throw new Error('Session not found');
     if (session.status === 'submitted') throw new Error('Quiz already submitted');
+
+    // ── get student info ───────────────────────────────────────────────────
+    const student = await this.repo.findStudentById(session.studentId);
+    if (!student) throw new Error('Student not found');
 
     await this.repo.saveAnswers(dto.examSessionId, session.studentId, dto.answers);
 
@@ -59,7 +72,23 @@ async startQuiz(dto: StartQuizDto) {
     });
 
     await this.repo.updateSessionStatus(dto.examSessionId, 'submitted');
-    return result;
+
+    // ── return result with student name ────────────────────────────────────
+    return {
+      resultId:      result.resultId,
+      examSessionId: result.examSessionId,
+      percentAge:    result.percentAge,
+      totalScore:    result.totalScore,
+      isPassed:      result.isPassed,
+      grade:         result.grade,
+      createAt:      result.createAt,
+      student: {
+        id:       student.id,
+        fullname: student.fullname,
+        class:    student.class,
+        email:    student.email,
+      },
+    };
   }
 
   async getResult(examSessionId: string) {

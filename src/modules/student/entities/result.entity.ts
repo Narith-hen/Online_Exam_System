@@ -1,5 +1,5 @@
 // entities/Result.entity.ts
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn } from 'typeorm';
 
 @Entity('results')
 export class Result {
@@ -23,16 +23,15 @@ export class Result {
 
   @Column({ type: 'varchar', length: 10 })
   grade!: string;
- 
+
   @ManyToOne('ExamSession', 'results')
-  @JoinColumn({ name: 'examSessionId' })  // ← add this
+  @JoinColumn({ name: 'examSessionId' })
   session!: any;
 
   @ManyToOne('Student', 'results')
-  @JoinColumn({ name: 'studentId' })      // ← add this
+  @JoinColumn({ name: 'studentId' })
   student!: any;
 
   @CreateDateColumn()
   createAt!: Date;
- 
 }
