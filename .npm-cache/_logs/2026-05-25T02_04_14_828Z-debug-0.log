@@ -1,0 +1,214 @@
+0 verbose cli C:\Program Files\nodejs\node.exe C:\Program Files\nodejs\node_modules\npm\bin\npm-cli.js
+1 info using npm@11.11.0
+2 info using node@v24.14.1
+3 silly config load:file:C:\Program Files\nodejs\node_modules\npm\npmrc
+4 silly config load:file:C:\Users\LITA.SOK\Desktop\Online_Exam_System\.npmrc
+5 silly config load:file:C:\Users\LITA.SOK\.npmrc
+6 silly config load:file:C:\Users\LITA.SOK\AppData\Roaming\npm\etc\npmrc
+7 verbose title npm install
+8 verbose argv "install"
+9 verbose logfile logs-max:10 dir:C:\Users\LITA.SOK\Desktop\Online_Exam_System\.npm-cache\_logs\2026-05-25T02_04_14_828Z-
+10 verbose logfile C:\Users\LITA.SOK\Desktop\Online_Exam_System\.npm-cache\_logs\2026-05-25T02_04_14_828Z-debug-0.log
+11 silly logfile done cleaning log files
+12 silly packumentCache heap:4496293888 maxSize:1124073472 maxEntrySize:562036736
+13 silly idealTree buildDeps
+14 silly fetch manifest mysql2@^3.14.1
+15 silly packumentCache full:https://registry.npmjs.org/mysql2 cache-miss
+16 http fetch GET 200 https://registry.npmjs.org/mysql2 200ms (cache miss)
+17 silly packumentCache full:https://registry.npmjs.org/mysql2 set size:undefined disposed:false
+18 silly fetch manifest @types/node@^25.9.1
+19 silly packumentCache full:https://registry.npmjs.org/@types%2fnode cache-miss
+20 http fetch GET 200 https://registry.npmjs.org/@types%2fnode 418ms (cache miss)
+21 silly packumentCache full:https://registry.npmjs.org/@types%2fnode set size:undefined disposed:false
+22 silly placeDep ROOT mysql2@3.22.3 OK for: online_exam_system@1.0.0 want: ^3.14.1
+23 silly fetch manifest aws-ssl-profiles@^1.1.2
+24 silly packumentCache full:https://registry.npmjs.org/aws-ssl-profiles cache-miss
+25 silly fetch manifest denque@^2.1.0
+26 silly packumentCache full:https://registry.npmjs.org/denque cache-miss
+27 silly fetch manifest generate-function@^2.3.1
+28 silly packumentCache full:https://registry.npmjs.org/generate-function cache-miss
+29 silly fetch manifest long@^5.3.2
+30 silly packumentCache full:https://registry.npmjs.org/long cache-miss
+31 silly fetch manifest lru.min@^1.1.4
+32 silly packumentCache full:https://registry.npmjs.org/lru.min cache-miss
+33 silly fetch manifest named-placeholders@^1.1.6
+34 silly packumentCache full:https://registry.npmjs.org/named-placeholders cache-miss
+35 silly fetch manifest sql-escaper@^1.3.3
+36 silly packumentCache full:https://registry.npmjs.org/sql-escaper cache-miss
+37 http fetch GET 200 https://registry.npmjs.org/aws-ssl-profiles 60ms (cache miss)
+38 silly packumentCache full:https://registry.npmjs.org/aws-ssl-profiles set size:undefined disposed:false
+39 http fetch GET 200 https://registry.npmjs.org/denque 155ms (cache miss)
+40 silly packumentCache full:https://registry.npmjs.org/denque set size:undefined disposed:false
+41 http fetch GET 200 https://registry.npmjs.org/generate-function 159ms (cache miss)
+42 silly packumentCache full:https://registry.npmjs.org/generate-function set size:undefined disposed:false
+43 http fetch GET 200 https://registry.npmjs.org/sql-escaper 177ms (cache miss)
+44 silly packumentCache full:https://registry.npmjs.org/sql-escaper set size:undefined disposed:false
+45 http fetch GET 200 https://registry.npmjs.org/named-placeholders 181ms (cache miss)
+46 silly packumentCache full:https://registry.npmjs.org/named-placeholders set size:undefined disposed:false
+47 http fetch GET 200 https://registry.npmjs.org/long 243ms (cache miss)
+48 silly packumentCache full:https://registry.npmjs.org/long set size:undefined disposed:false
+49 http fetch GET 200 https://registry.npmjs.org/lru.min 504ms (cache miss)
+50 silly packumentCache full:https://registry.npmjs.org/lru.min set size:undefined disposed:false
+51 silly placeDep ROOT aws-ssl-profiles@1.1.2 OK for: mysql2@3.22.3 want: ^1.1.2
+52 silly placeDep ROOT denque@2.1.0 OK for: mysql2@3.22.3 want: ^2.1.0
+53 silly placeDep ROOT generate-function@2.3.1 OK for: mysql2@3.22.3 want: ^2.3.1
+54 silly placeDep ROOT long@5.3.2 OK for: mysql2@3.22.3 want: ^5.3.2
+55 silly placeDep ROOT lru.min@1.1.4 OK for: mysql2@3.22.3 want: ^1.1.4
+56 silly placeDep ROOT named-placeholders@1.1.6 OK for: mysql2@3.22.3 want: ^1.1.6
+57 silly placeDep ROOT sql-escaper@1.3.3 OK for: mysql2@3.22.3 want: ^1.3.3
+58 silly fetch manifest is-property@^1.0.2
+59 silly packumentCache full:https://registry.npmjs.org/is-property cache-miss
+60 http fetch GET 200 https://registry.npmjs.org/is-property 48ms (cache miss)
+61 silly packumentCache full:https://registry.npmjs.org/is-property set size:undefined disposed:false
+62 silly placeDep ROOT is-property@1.0.2 OK for: generate-function@2.3.1 want: ^1.0.2
+63 silly reify moves {}
+64 silly audit bulk request {
+64 silly audit   '@types/node': [ '25.9.1' ],
+64 silly audit   accepts: [ '2.0.0' ],
+64 silly audit   anymatch: [ '3.1.3' ],
+64 silly audit   'balanced-match': [ '4.0.4' ],
+64 silly audit   'binary-extensions': [ '2.3.0' ],
+64 silly audit   'body-parser': [ '2.2.2' ],
+64 silly audit   'brace-expansion': [ '5.0.6' ],
+64 silly audit   braces: [ '3.0.3' ],
+64 silly audit   bytes: [ '3.1.2' ],
+64 silly audit   'call-bind-apply-helpers': [ '1.0.2' ],
+64 silly audit   'call-bound': [ '1.0.4' ],
+64 silly audit   chokidar: [ '3.6.0' ],
+64 silly audit   'content-disposition': [ '1.1.0' ],
+64 silly audit   'content-type': [ '1.0.5', '2.0.0' ],
+64 silly audit   cookie: [ '0.7.2' ],
+64 silly audit   'cookie-signature': [ '1.2.2' ],
+64 silly audit   debug: [ '4.4.3' ],
+64 silly audit   depd: [ '2.0.0' ],
+64 silly audit   'dunder-proto': [ '1.0.1' ],
+64 silly audit   'ee-first': [ '1.1.1' ],
+64 silly audit   encodeurl: [ '2.0.0' ],
+64 silly audit   'es-define-property': [ '1.0.1' ],
+64 silly audit   'es-errors': [ '1.3.0' ],
+64 silly audit   'es-object-atoms': [ '1.1.2' ],
+64 silly audit   'escape-html': [ '1.0.3' ],
+64 silly audit   etag: [ '1.8.1' ],
+64 silly audit   express: [ '5.2.1' ],
+64 silly audit   'fill-range': [ '7.1.1' ],
+64 silly audit   finalhandler: [ '2.1.1' ],
+64 silly audit   forwarded: [ '0.2.0' ],
+64 silly audit   fresh: [ '2.0.0' ],
+64 silly audit   fsevents: [ '2.3.3' ],
+64 silly audit   'function-bind': [ '1.1.2' ],
+64 silly audit   'get-intrinsic': [ '1.3.0' ],
+64 silly audit   'get-proto': [ '1.0.1' ],
+64 silly audit   'glob-parent': [ '5.1.2' ],
+64 silly audit   gopd: [ '1.2.0' ],
+64 silly audit   'has-flag': [ '3.0.0' ],
+64 silly audit   'has-symbols': [ '1.1.0' ],
+64 silly audit   hasown: [ '2.0.3' ],
+64 silly audit   'http-errors': [ '2.0.1' ],
+64 silly audit   'iconv-lite': [ '0.7.2' ],
+64 silly audit   'ignore-by-default': [ '1.0.1' ],
+64 silly audit   inherits: [ '2.0.4' ],
+64 silly audit   'ipaddr.js': [ '1.9.1' ],
+64 silly audit   'is-binary-path': [ '2.1.0' ],
+64 silly audit   'is-extglob': [ '2.1.1' ],
+64 silly audit   'is-glob': [ '4.0.3' ],
+64 silly audit   'is-number': [ '7.0.0' ],
+64 silly audit   'is-promise': [ '4.0.0' ],
+64 silly audit   'math-intrinsics': [ '1.1.0' ],
+64 silly audit   'media-typer': [ '1.1.0' ],
+64 silly audit   'merge-descriptors': [ '2.0.0' ],
+64 silly audit   'mime-db': [ '1.54.0' ],
+64 silly audit   'mime-types': [ '3.0.2' ],
+64 silly audit   minimatch: [ '10.2.5' ],
+64 silly audit   ms: [ '2.1.3' ],
+64 silly audit   negotiator: [ '1.0.0' ],
+64 silly audit   nodemon: [ '3.1.14' ],
+64 silly audit   'normalize-path': [ '3.0.0' ],
+64 silly audit   'object-inspect': [ '1.13.4' ],
+64 silly audit   'on-finished': [ '2.4.1' ],
+64 silly audit   once: [ '1.4.0' ],
+64 silly audit   parseurl: [ '1.3.3' ],
+64 silly audit   'path-to-regexp': [ '8.4.2' ],
+64 silly audit   picomatch: [ '2.3.2' ],
+64 silly audit   'proxy-addr': [ '2.0.7' ],
+64 silly audit   'pstree.remy': [ '1.1.8' ],
+64 silly audit   qs: [ '6.15.2' ],
+64 silly audit   'range-parser': [ '1.2.1' ],
+64 silly audit   'raw-body': [ '3.0.2' ],
+64 silly audit   readdirp: [ '3.6.0' ],
+64 silly audit   router: [ '2.2.0' ],
+64 silly audit   'safer-buffer': [ '2.1.2' ],
+64 silly audit   semver: [ '7.8.1' ],
+64 silly audit   send: [ '1.2.1' ],
+64 silly audit   'serve-static': [ '2.2.1' ],
+64 silly audit   setprototypeof: [ '1.2.0' ],
+64 silly audit   'side-channel': [ '1.1.0' ],
+64 silly audit   'side-channel-list': [ '1.0.1' ],
+64 silly audit   'side-channel-map': [ '1.0.1' ],
+64 silly audit   'side-channel-weakmap': [ '1.0.2' ],
+64 silly audit   'simple-update-notifier': [ '2.0.0' ],
+64 silly audit   statuses: [ '2.0.2' ],
+64 silly audit   'supports-color': [ '5.5.0' ],
+64 silly audit   'to-regex-range': [ '5.0.1' ],
+64 silly audit   toidentifier: [ '1.0.1' ],
+64 silly audit   touch: [ '3.1.1' ],
+64 silly audit   'type-is': [ '2.1.0' ],
+64 silly audit   typescript: [ '6.0.3' ],
+64 silly audit   undefsafe: [ '2.0.5' ],
+64 silly audit   'undici-types': [ '7.24.6' ],
+64 silly audit   unpipe: [ '1.0.0' ],
+64 silly audit   vary: [ '1.1.2' ],
+64 silly audit   wrappy: [ '1.0.2' ],
+64 silly audit   mysql2: [ '3.22.3' ],
+64 silly audit   'aws-ssl-profiles': [ '1.1.2' ],
+64 silly audit   denque: [ '2.1.0' ],
+64 silly audit   'generate-function': [ '2.3.1' ],
+64 silly audit   long: [ '5.3.2' ],
+64 silly audit   'lru.min': [ '1.1.4' ],
+64 silly audit   'named-placeholders': [ '1.1.6' ],
+64 silly audit   'sql-escaper': [ '1.3.3' ],
+64 silly audit   'is-property': [ '1.0.2' ]
+64 silly audit }
+65 http cache sql-escaper@https://registry.npmjs.org/sql-escaper/-/sql-escaper-1.3.3.tgz 0ms (cache hit)
+66 http cache named-placeholders@https://registry.npmjs.org/named-placeholders/-/named-placeholders-1.1.6.tgz 0ms (cache hit)
+67 http cache is-property@https://registry.npmjs.org/is-property/-/is-property-1.0.2.tgz 0ms (cache hit)
+68 http cache long@https://registry.npmjs.org/long/-/long-5.3.2.tgz 0ms (cache hit)
+69 http cache lru.min@https://registry.npmjs.org/lru.min/-/lru.min-1.1.4.tgz 0ms (cache hit)
+70 http cache generate-function@https://registry.npmjs.org/generate-function/-/generate-function-2.3.1.tgz 0ms (cache hit)
+71 http cache denque@https://registry.npmjs.org/denque/-/denque-2.1.0.tgz 0ms (cache hit)
+72 silly tarball no local data for sql-escaper@https://registry.npmjs.org/sql-escaper/-/sql-escaper-1.3.3.tgz. Extracting by manifest.
+73 silly tarball no local data for named-placeholders@https://registry.npmjs.org/named-placeholders/-/named-placeholders-1.1.6.tgz. Extracting by manifest.
+74 silly tarball no local data for is-property@https://registry.npmjs.org/is-property/-/is-property-1.0.2.tgz. Extracting by manifest.
+75 silly tarball no local data for long@https://registry.npmjs.org/long/-/long-5.3.2.tgz. Extracting by manifest.
+76 silly tarball no local data for lru.min@https://registry.npmjs.org/lru.min/-/lru.min-1.1.4.tgz. Extracting by manifest.
+77 silly tarball no local data for generate-function@https://registry.npmjs.org/generate-function/-/generate-function-2.3.1.tgz. Extracting by manifest.
+78 silly tarball no local data for denque@https://registry.npmjs.org/denque/-/denque-2.1.0.tgz. Extracting by manifest.
+79 http cache aws-ssl-profiles@https://registry.npmjs.org/aws-ssl-profiles/-/aws-ssl-profiles-1.1.2.tgz 0ms (cache hit)
+80 http cache mysql2@https://registry.npmjs.org/mysql2/-/mysql2-3.22.3.tgz 0ms (cache hit)
+81 silly tarball no local data for aws-ssl-profiles@https://registry.npmjs.org/aws-ssl-profiles/-/aws-ssl-profiles-1.1.2.tgz. Extracting by manifest.
+82 silly tarball no local data for mysql2@https://registry.npmjs.org/mysql2/-/mysql2-3.22.3.tgz. Extracting by manifest.
+83 http fetch GET 200 https://registry.npmjs.org/generate-function/-/generate-function-2.3.1.tgz 138ms (cache miss)
+84 http fetch GET 200 https://registry.npmjs.org/named-placeholders/-/named-placeholders-1.1.6.tgz 141ms (cache miss)
+85 http fetch GET 200 https://registry.npmjs.org/is-property/-/is-property-1.0.2.tgz 145ms (cache miss)
+86 http fetch POST 200 https://registry.npmjs.org/-/npm/v1/security/advisories/bulk 223ms
+87 silly audit report {}
+88 http fetch GET 200 https://registry.npmjs.org/lru.min/-/lru.min-1.1.4.tgz 217ms (cache miss)
+89 http fetch GET 200 https://registry.npmjs.org/sql-escaper/-/sql-escaper-1.3.3.tgz 232ms (cache miss)
+90 http fetch GET 200 https://registry.npmjs.org/denque/-/denque-2.1.0.tgz 232ms (cache miss)
+91 http fetch GET 200 https://registry.npmjs.org/long/-/long-5.3.2.tgz 234ms (cache miss)
+92 http fetch GET 200 https://registry.npmjs.org/aws-ssl-profiles/-/aws-ssl-profiles-1.1.2.tgz 270ms (cache miss)
+93 http fetch GET 200 https://registry.npmjs.org/mysql2/-/mysql2-3.22.3.tgz 622ms (cache miss)
+94 silly ADD node_modules/is-property
+95 silly ADD node_modules/sql-escaper
+96 silly ADD node_modules/named-placeholders
+97 silly ADD node_modules/lru.min
+98 silly ADD node_modules/long
+99 silly ADD node_modules/generate-function
+100 silly ADD node_modules/denque
+101 silly ADD node_modules/aws-ssl-profiles
+102 silly ADD node_modules/mysql2
+103 verbose cwd C:\Users\LITA.SOK\Desktop\Online_Exam_System
+104 verbose os Windows_NT 10.0.26200
+105 verbose node v24.14.1
+106 verbose npm  v11.11.0
+107 verbose exit 0
+108 info ok

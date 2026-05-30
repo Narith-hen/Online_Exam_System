@@ -1,13 +1,23 @@
 import { DataSource } from 'typeorm';
 import { envConfig } from './env.config';
+import path from 'node:path';
+
+// Import all entities explicitly
+import { Student } from '../modules/student/entities/student.entity';
+import { ExamSession } from '../modules/student/entities/ExamSession.entity';
+import { Answer } from '../modules/student/entities/answer.entity';
+import { Result } from '../modules/student/entities/result.entity';
+
+export const DB_NAME = envConfig.DB_NAME;
 
 export class DatabaseConfig {
   private static dataSource: DataSource;
 
   static getDataSource(): DataSource {
     if (!DatabaseConfig.dataSource) {
+      const rootDir = path.join(__dirname, '..');
       DatabaseConfig.dataSource = new DataSource({
-        type: 'mysql',                    
+        type: 'mysql',
         host: envConfig.DB_HOST,
         port: envConfig.DB_PORT,
         username: envConfig.DB_USERNAME,
@@ -19,8 +29,7 @@ export class DatabaseConfig {
         
         synchronize: false,
         logging: envConfig.DB_LOGGING === true,
-        
-        // Extra options for MySQL
+
         charset: 'utf8mb4',
         timezone: '+07:00',               
         extra: {
@@ -36,7 +45,6 @@ export class DatabaseConfig {
   static async connect(): Promise<void> {
     try {
       const dataSource = this.getDataSource();
-      
       if (!dataSource.isInitialized) {
         await dataSource.initialize();
         console.log('✅ MySQL Database connected successfully');
