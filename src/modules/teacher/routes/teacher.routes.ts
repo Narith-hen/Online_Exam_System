@@ -1,9 +1,9 @@
-import { Router, Request, Response } from 'express';
+import { Router } from 'express';
+import teacherExamRoutes from './teacherExam.routes';
 
 const router = Router();
 
-router.get('/', (req: Request, res: Response) => {
-	res.json({ message: 'Teacher module root' });
-});
+// ── Connect exam routes ──
+router.use('/exams', teacherExamRoutes);
 
 export default router;

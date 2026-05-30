@@ -1,1 +1,0 @@
-export teacherExamController from ""

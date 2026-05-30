@@ -1,10 +1,10 @@
 import express, { Application } from 'express';
+// import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
 
 import authRoutes from './modules/auth/routes/auth.routes';
-import teacherRoutes from './modules/teacher/routes/teacher.routes';
 import teacherExamRoutes from './modules/teacher/routes/teacherExam.routes';
 import studentRoutes from './modules/student/routes/student.routes';
 import dashboardRoutes from './modules/dashboard/routes/dashboard.routes';
@@ -12,6 +12,8 @@ import dashboardRoutes from './modules/dashboard/routes/dashboard.routes';
 import errorInterceptor from './shared/interceptors/error.interceptor';
 import responseInterceptor from './shared/interceptors/response.interceptor';
 import loggerMiddleware from './shared/middlewares/logger.middleware';
+
+const app = express();
 
 class App {
   public app: Application;
@@ -26,6 +28,7 @@ class App {
 
   private initializeMiddlewares(): void {
     this.app.use(helmet());
+    this.app.use(express.json());
     this.app.use(cors());
     this.app.use(compression());
     this.app.use(express.json());
@@ -44,8 +47,8 @@ class App {
     });
 
     this.app.use('/api/auth', authRoutes);
-    this.app.use('/api/teachers', teacherRoutes);
     this.app.use('/api/teachers/exams', teacherExamRoutes);
+    // this.app.use('/api/teacher/exams', teacherExamRoutes);
     this.app.use('/api/student', studentRoutes);
     this.app.use('/api/dashboard', dashboardRoutes);
 

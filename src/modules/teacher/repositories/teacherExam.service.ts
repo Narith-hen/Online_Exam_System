@@ -44,7 +44,7 @@ export class TeacherService {
 
   async getAllExams(): Promise<Exam[]> {
     return this.examRepository.find({
-      relations: ["questions"],
+      relations: { questions: true },
       order: { createdAt: "DESC" },
     });
   }
@@ -52,7 +52,7 @@ export class TeacherService {
   async getExamById(id: number): Promise<Exam> {
     const exam = await this.examRepository.findOne({
       where: { id },
-      relations: ["questions"],
+      relations: { questions: true },
     });
     if (!exam) throw new NotFoundException("Exam not found");
     return exam;
@@ -61,7 +61,7 @@ export class TeacherService {
   async getExamByCode(examCode: string): Promise<Exam> {
     const exam = await this.examRepository.findOne({
       where: { examCode },
-      relations: ["questions"],
+      relations: { questions: true },
     });
     if (!exam) throw new NotFoundException("Exam not found");
     return exam;
