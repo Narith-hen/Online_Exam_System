@@ -3,8 +3,8 @@ import { Repository } from 'typeorm';
 import { AppDataSource } from '../../../config/database.config';
 import { Student }     from '../entities/student.entity';
 import { ExamSession } from '../entities/ExamSession.entity';
-import { Answer }      from '../entities/Answer.entity';
-import { Result }      from '../entities/Result.entity';
+import { Answer }      from '../entities/answer.entity';
+import { Result }      from '../entities/result.entity';
 
 export class StudentRepository {
   private studentRepo: Repository<Student>;
