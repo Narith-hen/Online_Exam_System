@@ -5,7 +5,7 @@ const router = Router();
 const teacherController = new AuthController();
 
 router.post("/login", teacherController.teacherLogin);
-router.post("/create", teacherController.teacherRegister);
+router.post("/register", teacherController.teacherRegister);
 
 router.get("/results", teacherController.teacherShowResult);
 
