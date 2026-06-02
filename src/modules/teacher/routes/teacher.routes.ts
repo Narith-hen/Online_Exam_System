@@ -7,9 +7,7 @@ const teacherController = new AuthController();
 
 router.post("/login", teacherController.teacherLogin);
 router.post("/register", teacherController.teacherRegister);
-
 router.get("/results", teacherController.teacherShowResult);
-
 router.use('/exams', teacherExamRoutes);
 
 export default router;
