@@ -1,31 +1,59 @@
-import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
-import { ExamStatus } from '../../../constants/exam-status.enum';
-import { Question } from './question.entity';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  OneToMany,
+} from 'typeorm';
+import { QuestionEntity } from './question.entity';
 
 @Entity('exams')
-export class Exam {
-  @PrimaryGeneratedColumn()
-  id!: number;
+export class ExamEntity {
+  @PrimaryGeneratedColumn('uuid')
+  examId: string;
 
-  @Column({ name: 'exam_title', type: 'varchar', length: 255 })
-  examTitle!: string;
+  @Column({ type: 'char', length: 36 })
+  createdBy: string;
 
-  @Column({ name: 'exam_code', type: 'varchar', length: 12, unique: true })
-  examCode!: string;
+  @Column({ type: 'varchar', length: 200 })
+  title: string;
 
-  @Column({ type: 'int', name: 'duration_minutes', nullable: true })
-  durationMinutes?: number | null;
+  @Column({ type: 'text', nullable: true })
+  description: string | null;
 
-  @Column({ type: 'enum', enum: ExamStatus, default: ExamStatus.DRAFT })
-  status!: ExamStatus;
+  @Column({ type: 'int' })
+  durationMinutes: number;
 
-  @OneToMany(() => Question, (q) => q.exam)
-  questions?: Question[];
+  @Column({ type: 'datetime' })
+  startWindow: Date;
 
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt!: Date;
+  @Column({ type: 'datetime' })
+  endWindow: Date;
 
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt!: Date;
+  @Column({ type: 'int', default: 0 })
+  totalMarks: number;
+
+  @Column({ type: 'int' })
+  passingScore: number;
+
+  @Column({ type: 'tinyint', default: 0 })
+  isPublished: boolean;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+
+  @Column({ type: 'varchar', length: 50, nullable: true })
+  examCode: string | null;
+
+  @Column({ type: 'varchar', length: 500, nullable: true })
+  examLink: string | null;
+
+  @OneToMany(() => QuestionEntity, (question) => question.exam, {
+    cascade: true,
+  })
+  questions: QuestionEntity[];
 }
-
