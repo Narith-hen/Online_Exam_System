@@ -44,7 +44,7 @@ class App {
 
     this.app.use('/api/auth', authRoutes);
     this.app.use('/api/teacher', teacherRoutes);
-    this.app.use('/api/student', studentRoutes);
+    this.app.use('/api/students', studentRoutes);
     this.app.use('/api/dashboard', dashboardRoutes);
     
     
