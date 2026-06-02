@@ -13,23 +13,20 @@ export class StudentService {
 
   // services/student.service.ts
   async login(dto: StudentLoginDto) {
-  let student = await this.repo.findStudentByEmail(dto.email);
+    const student = await this.repo.findStudentByEmail(dto.email);
 
-  if (student) {
-    // ── existing student — verify fullname and class match ─────────────
-    if (student.fullname.toLowerCase() !== dto.fullname.toLowerCase())
-      throw new Error('fullname does not match our records');
-    if (student.class.toLowerCase() !== dto.class.toLowerCase())
-      throw new Error('class does not match our records');
-    return student;
-  }
+    if (student) {
+      throw new Error("Can't login again");
+    }
 
-  // ── new student — create only if all fields are valid ─────────────────
-  student = await this.repo.createStudent({
-    fullname: dto.fullname,
-    class:    dto.class,
-    email:    dto.email,
-  });
+    // ── new student — create only if all fields are valid ─────────────────
+    const newStudent = await this.repo.createStudent({
+      fullname: dto.fullname,
+      class:    dto.class,
+      email:    dto.email,
+    });
+
+    return newStudent;
 
   return student;
  }

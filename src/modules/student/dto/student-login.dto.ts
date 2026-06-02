@@ -19,6 +19,8 @@ export class StudentLoginDto {
       throw new Error('fullname must be at least 2 characters');
     if (fullname.length > 100)
       throw new Error('fullname must not exceed 100 characters');
+    if (/[0-9_.!?]/.test(fullname))
+      throw new Error('fullname must not contain numbers, underscores, dots, !, or ?');
     if (!/^[a-zA-Z\s]+$/.test(fullname))
       throw new Error('fullname must contain only letters and spaces');
 
