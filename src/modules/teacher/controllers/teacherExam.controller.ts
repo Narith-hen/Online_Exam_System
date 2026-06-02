@@ -1,143 +1,238 @@
 import { Request, Response } from 'express';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { teacherExamService } from '../services/teacherExam.service';
 
-// ── EXAM ──────────────────────────────────────
+type HttpError = {
+  message?: string;
+  getStatus?: () => number;
+};
+
+const parseParam = (value: string | string[] | undefined, name: string): string => {
+  if (Array.isArray(value) || !value) {
+    throw new BadRequestException(`${name} is required`);
+  }
+
+  return value.trim();
+};
+
+const parseNumericId = (value: string | string[] | undefined, name: string): number => {
+  const id = Number(parseParam(value, name));
+  if (!Number.isInteger(id) || id <= 0) {
+    throw new BadRequestException(`${name} must be a valid number`);
+  }
+
+  return id;
+};
+
+const parseExpiresInMinutes = (value: unknown): number | undefined => {
+  if (value === undefined || value === null || value === '') {
+    return undefined;
+  }
+
+  const minutes = Number(value);
+  if (!Number.isInteger(minutes) || minutes <= 0) {
+    throw new BadRequestException('expiresInMinutes must be a positive number');
+  }
+
+  return minutes;
+};
+
+const sendError = (res: Response, error: unknown, overrideMessage?: string): void => {
+  const httpError = error as HttpError;
+  const status = httpError.getStatus?.() ?? 500;
+  const message = overrideMessage ?? httpError.message ?? 'Internal server error';
+
+  res.status(status).json({ message });
+};
 
 export const getAllExams = async (req: Request, res: Response) => {
   try {
-    // TODO: fetch all exams from DB
-    res.status(200).json({ message: 'Get all exams' });
+    const exams = await teacherExamService.getAllExams();
+    res.status(200).json({ data: exams });
   } catch (error) {
-    res.status(500).json({ message: 'Internal server error', error });
+    sendError(res, error);
   }
 };
 
 export const getExamById = async (req: Request, res: Response) => {
   try {
-    const { examId } = req.params;
-    // TODO: fetch exam by examId
-    res.status(200).json({ message: `Get exam ${examId}` });
+    const examId = parseParam(req.params.examId, 'examId');
+    const exam = await teacherExamService.getExamById(examId);
+    res.status(200).json({ data: exam });
   } catch (error) {
-    res.status(500).json({ message: 'Internal server error', error });
+    sendError(res, error);
   }
 };
 
 export const createExam = async (req: Request, res: Response) => {
   try {
-    const body = req.body;
-    // TODO: save new exam to DB
-    res.status(201).json({ message: 'Exam created', data: body });
+    const exam = await teacherExamService.createExam(req.body);
+    res.status(201).json({ message: 'Exam created', data: exam });
   } catch (error) {
-    res.status(500).json({ message: 'Internal server error', error });
+    sendError(res, error);
   }
 };
 
 export const updateExam = async (req: Request, res: Response) => {
   try {
-    const { examId } = req.params;
-    const body = req.body;
-    // TODO: update exam in DB
-    res.status(200).json({ message: `Exam ${examId} updated`, data: body });
+    const examId = parseParam(req.params.examId, 'examId');
+    const exam = await teacherExamService.updateExam(examId, req.body);
+    res.status(200).json({ message: 'Exam updated', data: exam });
   } catch (error) {
-    res.status(500).json({ message: 'Internal server error', error });
+    sendError(res, error);
   }
 };
 
 export const deleteExam = async (req: Request, res: Response) => {
   try {
-    const { examId } = req.params;
-    // TODO: delete exam from DB
-    res.status(200).json({ message: `Exam ${examId} deleted` });
+    const examId = parseParam(req.params.examId, 'examId');
+    await teacherExamService.deleteExam(examId);
+    res.status(200).json({ message: 'Exam deleted' });
   } catch (error) {
-    res.status(500).json({ message: 'Internal server error', error });
+    sendError(res, error);
   }
 };
 
-// ── QUESTION ──────────────────────────────────
-
 export const createQuestion = async (req: Request, res: Response) => {
   try {
-    const { examId } = req.params;
-    const body = req.body; // { text, type, points }
-    // TODO: save question linked to examId
-    res.status(201).json({ message: `Question added to exam ${examId}`, data: body });
+    const examId = parseParam(req.params.examId, 'examId');
+    const question = await teacherExamService.addQuestion(examId, req.body);
+    res.status(201).json({ message: 'Question created', data: question });
   } catch (error) {
-    res.status(500).json({ message: 'Internal server error', error });
+    sendError(res, error);
   }
 };
 
 export const updateQuestion = async (req: Request, res: Response) => {
   try {
-    const { examId, questionId } = req.params;
-    const body = req.body;
-    // TODO: update question in DB
-    res.status(200).json({ message: `Question ${questionId} updated`, data: body });
+    const questionId = parseNumericId(req.params.questionId, 'questionId');
+    const question = await teacherExamService.updateQuestion(questionId, req.body);
+    res.status(200).json({ message: 'Question updated', data: question });
   } catch (error) {
-    res.status(500).json({ message: 'Internal server error', error });
+    sendError(res, error);
   }
 };
 
 export const deleteQuestion = async (req: Request, res: Response) => {
   try {
-    const { examId, questionId } = req.params;
-    // TODO: delete question from DB
-    res.status(200).json({ message: `Question ${questionId} deleted` });
+    const questionId = parseNumericId(req.params.questionId, 'questionId');
+    await teacherExamService.deleteQuestion(questionId);
+    res.status(200).json({ message: 'Question deleted' });
   } catch (error) {
-    res.status(500).json({ message: 'Internal server error', error });
+    sendError(res, error);
   }
 };
 
-// ── ANSWER ────────────────────────────────────
-
 export const createAnswer = async (req: Request, res: Response) => {
-  try {
-    const { questionId } = req.params;
-    const body = req.body; // { text, isCorrect }
-    // TODO: save answer linked to questionId
-    res.status(201).json({ message: `Answer added to question ${questionId}`, data: body });
-  } catch (error) {
-    res.status(500).json({ message: 'Internal server error', error });
-  }
+  res.status(501).json({ message: 'Answer endpoints are not implemented yet' });
 };
 
 export const updateAnswer = async (req: Request, res: Response) => {
-  try {
-    const { questionId, answerId } = req.params;
-    const body = req.body;
-    // TODO: update answer in DB
-    res.status(200).json({ message: `Answer ${answerId} updated`, data: body });
-  } catch (error) {
-    res.status(500).json({ message: 'Internal server error', error });
-  }
+  res.status(501).json({ message: 'Answer endpoints are not implemented yet' });
 };
 
 export const deleteAnswer = async (req: Request, res: Response) => {
-  try {
-    const { questionId, answerId } = req.params;
-    // TODO: delete answer from DB
-    res.status(200).json({ message: `Answer ${answerId} deleted` });
-  } catch (error) {
-    res.status(500).json({ message: 'Internal server error', error });
-  }
+  res.status(501).json({ message: 'Answer endpoints are not implemented yet' });
 };
 
-// ── RESULT ────────────────────────────────────
-
 export const getExamResults = async (req: Request, res: Response) => {
-  try {
-    const { examId } = req.params;
-    // TODO: fetch all student results for this exam
-    res.status(200).json({ message: `All results for exam ${examId}` });
-  } catch (error) {
-    res.status(500).json({ message: 'Internal server error', error });
-  }
+  res.status(501).json({ message: 'Result endpoints are not implemented yet' });
 };
 
 export const getStudentResult = async (req: Request, res: Response) => {
+  res.status(501).json({ message: 'Result endpoints are not implemented yet' });
+};
+
+export const generateStudentCode = async (req: Request, res: Response) => {
   try {
-    const { examId, studentId } = req.params;
-    // TODO: fetch one student's result
-    res.status(200).json({ message: `Result of student ${studentId} for exam ${examId}` });
+    const examIdOrCode = parseParam(req.params.examId, 'examId');
+    const studentId =
+      typeof req.body?.studentId === 'string' && req.body.studentId.trim()
+        ? req.body.studentId.trim()
+        : undefined;
+    const requestedAccessCode =
+      typeof req.body?.accessCode === 'string' && req.body.accessCode.trim()
+        ? req.body.accessCode.trim()
+        : undefined;
+
+    const accessCode = await teacherExamService.generateStudentCode(
+      examIdOrCode,
+      studentId,
+      requestedAccessCode
+    );
+    res.status(201).json(accessCode);
   } catch (error) {
-    res.status(500).json({ message: 'Internal server error', error });
+    const message =
+      error instanceof NotFoundException
+        ? 'Exam not found. Use an existing examCode or examId in the URL.'
+        : (error as HttpError).message ?? 'Could not create access code.';
+
+    sendError(res, error, message);
+  }
+};
+
+export const getExamAccessCode = async (req: Request, res: Response) => {
+  try {
+    const examIdOrCode = parseParam(req.params.examId, 'examId');
+    const exam = await teacherExamService.getExamByIdOrCode(examIdOrCode);
+
+    if (!exam.accessCode) {
+      throw new NotFoundException(
+        'No access code yet. Create one first.'
+      );
+    }
+
+    res.status(200).json({
+      accessCode: exam.accessCode,
+      examCode: exam.examCode,
+      examLink: exam.examLink,
+    });
+  } catch (error) {
+    const message =
+      error instanceof NotFoundException
+        ? error.message
+        : 'Could not get access code.';
+
+    sendError(res, error, message);
+  }
+};
+
+export const getExamAccessCodeById = async (req: Request, res: Response) => {
+  try {
+    const examId = parseParam(req.params.examId, 'examId');
+    const exam = await teacherExamService.getExamById(examId);
+
+    if (!exam.accessCode) {
+      throw new NotFoundException('No access code yet. Create one first.');
+    }
+
+    res.status(200).json({
+      examId: exam.examId,
+      accessCode: exam.accessCode,
+      examCode: exam.examCode,
+      examLink: exam.examLink,
+    });
+  } catch (error) {
+    const message =
+      error instanceof NotFoundException
+        ? error.message
+        : 'Could not get access code by id.';
+
+    sendError(res, error, message);
+  }
+};
+
+export const getExamByAccessCode = async (req: Request, res: Response) => {
+  try {
+    const code = parseParam(req.params.code, 'code');
+    const exam = await teacherExamService.getExamByCodeOrAccessCode(code);
+    res.status(200).json({ data: exam });
+  } catch (error) {
+    const message =
+      error instanceof NotFoundException
+        ? 'No exam found for this code.'
+        : 'Could not get exam by code.';
+
+    sendError(res, error, message);
   }
 };

@@ -1,5 +1,11 @@
 // question.entity.ts
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from "typeorm";
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from "typeorm";
 import { Exam } from "./exam.entity";
 
 @Entity("questions")
@@ -16,9 +22,10 @@ export class Question {
   @Column({ name: "correct_answer" })
   correctAnswer!: string;
 
-  @Column({ name: "exam_id" })
-  examId!: number;
+  @Column({ name: "examId" })
+  examId!: string;
 
   @ManyToOne(() => Exam, (exam) => exam.questions)
+  @JoinColumn({ name: "examId", referencedColumnName: "examId" })
   exam!: Exam;
 }
