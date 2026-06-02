@@ -1,25 +1,44 @@
-// question.entity.ts
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from "typeorm";
-import { Exam } from "./exam.entity";
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
+import { ExamEntity } from './exam.entity';
 
-@Entity("questions")
-export class Question {
-  @PrimaryGeneratedColumn()
-  id!: number;
+@Entity('questions')
+export class QuestionEntity {
+  @PrimaryGeneratedColumn('uuid')
+  questionId: string;
 
-  @Column({ name: "question_text" })
-  questionText!: string;
+  @Column({ type: 'char', length: 36 })
+  examId: string;
 
-  @Column("simple-array")
-  options!: string[];
+  @Column({ type: 'text' })
+  questionText: string;
 
-  @Column({ name: "correct_answer" })
-  correctAnswer!: string;
+  @Column({ type: 'varchar', length: 50 })
+  questionType: string;
 
-  @Column({ name: "exam_id" })
-  examId!: number;
+  @Column({ type: 'longtext', nullable: true })
+  questionOptions: string | null;
 
-  @ManyToOne(() => Exam, (exam) => exam.questions)
-  @JoinColumn({ name: "exam_id" })
-  exam!: Exam;
+  @Column({ type: 'varchar', length: 255 })
+  correctAnswer: string;
+
+  @Column({ type: 'int' })
+  marks: number;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+
+  @ManyToOne(() => ExamEntity, (exam) => exam.questions)
+  @JoinColumn({ name: 'examId' })
+  exam: ExamEntity;
 }

@@ -5,36 +5,36 @@ import {
   createExam,
   updateExam,
   deleteExam,
+  getExamResults,
+  getStudentResult,
   createQuestion,
   updateQuestion,
   deleteQuestion,
   createAnswer,
   updateAnswer,
   deleteAnswer,
-  getExamResults,
-  getStudentResult,
-} from '../controllers/teacherExam.controller';
+} from '../../teacher/controllers';   // ← Clean import from index.ts
 
 const router = Router();
 
-// ── EXAM ──────────────────────────────────────
+// ── EXAM ROUTES ──────────────────────────────────────
 router.get('/', getAllExams);
 router.get('/:examId', getExamById);
 router.post('/create', createExam);
 router.put('/:examId', updateExam);
 router.delete('/:examId', deleteExam);
 
-// ── QUESTION ──────────────────────────────────
+// ── QUESTION ROUTES ──────────────────────────────────
 router.post('/:examId/questions', createQuestion);
 router.put('/:examId/questions/:questionId', updateQuestion);
 router.delete('/:examId/questions/:questionId', deleteQuestion);
 
-// ── ANSWER ────────────────────────────────────
+// ── ANSWER ROUTES ────────────────────────────────────
 router.post('/:examId/questions/:questionId/answers', createAnswer);
 router.put('/:examId/questions/:questionId/answers/:answerId', updateAnswer);
 router.delete('/:examId/questions/:questionId/answers/:answerId', deleteAnswer);
 
-// ── RESULT ────────────────────────────────────
+// ── RESULT ROUTES ────────────────────────────────────
 router.get('/:examId/results', getExamResults);
 router.get('/:examId/results/:studentId', getStudentResult);
 
