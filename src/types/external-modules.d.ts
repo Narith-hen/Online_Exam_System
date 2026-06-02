@@ -6,6 +6,9 @@ declare module 'class-validator' {
   export function IsNotEmpty(): PropertyDecorator;
   export function IsOptional(): PropertyDecorator;
   export function IsEmail(): PropertyDecorator;
+  export function IsArray(): PropertyDecorator;
+  export function ArrayMinSize(min: number): PropertyDecorator;
+  export function ArrayMaxSize(max: number): PropertyDecorator;
   export function MinLength(min: number): PropertyDecorator;
   export function Length(min: number, max?: number): PropertyDecorator;
 }

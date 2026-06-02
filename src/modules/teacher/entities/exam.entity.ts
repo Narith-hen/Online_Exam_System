@@ -1,17 +1,17 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { ExamStatus } from '../../../constants/exam-status.enum';
-import { QuestionEntity } from './question.entity';
+import { Question } from './question.entity';
 
 @Entity('exams')
-export class ExamEntity {
-  @PrimaryGeneratedColumn('uuid')
-  id!: string;
+export class Exam {
+  @PrimaryGeneratedColumn()
+  id!: number;
 
-  @Column({ type: 'varchar', length: 12, unique: true })
-  code!: string;
+  @Column({ name: 'exam_title', type: 'varchar', length: 255 })
+  examTitle!: string;
 
-  @Column({ type: 'varchar', length: 255 })
-  title!: string;
+  @Column({ name: 'exam_code', type: 'varchar', length: 12, unique: true })
+  examCode!: string;
 
   @Column({ type: 'int', name: 'duration_minutes', nullable: true })
   durationMinutes?: number | null;
@@ -19,8 +19,8 @@ export class ExamEntity {
   @Column({ type: 'enum', enum: ExamStatus, default: ExamStatus.DRAFT })
   status!: ExamStatus;
 
-  @OneToMany(() => QuestionEntity, (q) => q.exam)
-  questions?: QuestionEntity[];
+  @OneToMany(() => Question, (q) => q.exam)
+  questions?: Question[];
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt!: Date;

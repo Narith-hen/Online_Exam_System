@@ -1,66 +1,25 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  OneToMany,
-  PrimaryGeneratedColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
-} from 'typeorm';
-import { QuestionType } from '../../../constants/question-type.enum';
-import { ExamEntity } from './exam.entity';
+// question.entity.ts
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from "typeorm";
+import { Exam } from "./exam.entity";
 
-@Entity('questions')
-export class QuestionEntity {
-  @PrimaryGeneratedColumn('uuid')
-  id!: string;
+@Entity("questions")
+export class Question {
+  @PrimaryGeneratedColumn()
+  id!: number;
 
-  @Column({ name: 'exam_id' })
-  examId!: string;
+  @Column({ name: "question_text" })
+  questionText!: string;
 
-  @Column({ type: 'text' })
-  text!: string;
+  @Column("simple-array")
+  options!: string[];
 
-  @Column({ type: 'enum', enum: QuestionType })
-  type!: QuestionType;
+  @Column({ name: "correct_answer" })
+  correctAnswer!: string;
 
-  @Column({ type: 'int', default: 1 })
-  points!: number;
+  @Column({ name: "exam_id" })
+  examId!: number;
 
-  @Column({ name: 'correct_answer', type: 'text', nullable: true })
-  correctAnswer?: string | null;
-
-  @ManyToOne(() => ExamEntity, (exam) => exam.questions, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'exam_id' })
-  exam!: ExamEntity;
-
-  @OneToMany(() => QuestionOptionEntity, (opt) => opt.question, { cascade: true })
-  options?: QuestionOptionEntity[];
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt!: Date;
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt!: Date;
+  @ManyToOne(() => Exam, (exam) => exam.questions)
+  @JoinColumn({ name: "exam_id" })
+  exam!: Exam;
 }
-
-@Entity('question_options')
-export class QuestionOptionEntity {
-  @PrimaryGeneratedColumn('uuid')
-  id!: string;
-
-  @Column({ name: 'question_id' })
-  questionId!: string;
-
-  @Column({ type: 'text' })
-  text!: string;
-
-  @Column({ name: 'is_correct', type: 'boolean', default: false })
-  isCorrect!: boolean;
-
-  @ManyToOne(() => QuestionEntity, (q) => q.options, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'question_id' })
-  question!: QuestionEntity;
-}
-
