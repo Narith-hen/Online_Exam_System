@@ -53,7 +53,7 @@ router.get('/:examId/results', getExamResults);
 router.get('/:examId/results/:studentId', getStudentResult);
 
 // ACCESS CODE
-router.get('/:examId/access-code', getExamAccessCode);
-router.post('/:examId/access-code', generateStudentCode);
+router.get('/:examCode/access-code', getExamAccessCode);
+router.post('/:examCode/access-code', generateStudentCode);
 
 export default router;
