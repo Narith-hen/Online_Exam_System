@@ -46,7 +46,7 @@ export class TeacherService {
     const normalizedAccessCode = accessCode.trim();
 
     if (!normalizedAccessCode) {
-      throw new BadRequestException("Access code is required");
+      throw new BadRequestException("Please input code");
     }
 
     if (!/^[A-Z0-9]+$/.test(normalizedAccessCode)) {
@@ -244,20 +244,20 @@ export class TeacherService {
   ): Promise<{ accessCode: string; studentId?: string; examCode: string; examLink: string | null }> {
     const exam = await this.getExamByIdOrCode(examIdOrCode);
 
-    if (requestedAccessCode) {
-      const accessCode = this.normalizeAccessCode(requestedAccessCode);
-      const existingExam = await this.examRepository.findOne({
-        where: { accessCode },
-      });
-
-      if (existingExam) {
-        throw new ConflictException("This access code is already used by another exam");
-      }
-
-      exam.accessCode = accessCode;
-    } else {
-      exam.accessCode = await this.generateUniqueAccessCode();
+    if (requestedAccessCode === undefined) {
+      throw new BadRequestException('Please input code');
     }
+
+    const accessCode = this.normalizeAccessCode(requestedAccessCode);
+    const existingExam = await this.examRepository.findOne({
+      where: { accessCode },
+    });
+
+    if (existingExam) {
+      throw new ConflictException('This access code is already used by another exam');
+    }
+
+    exam.accessCode = accessCode;
 
     await this.examRepository.save(exam);
 

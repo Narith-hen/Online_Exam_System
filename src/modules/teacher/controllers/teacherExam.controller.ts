@@ -151,8 +151,9 @@ export const generateStudentCode = async (req: Request, res: Response) => {
         ? req.body.studentId.trim()
         : undefined;
     const requestedAccessCode =
-      typeof req.body?.accessCode === 'string' && req.body.accessCode.trim()
-        ? req.body.accessCode.trim()
+      req.body && Object.prototype.hasOwnProperty.call(req.body, 'accessCode') &&
+      typeof req.body.accessCode === 'string'
+        ? req.body.accessCode
         : undefined;
 
     const accessCode = await teacherExamService.generateStudentCode(
