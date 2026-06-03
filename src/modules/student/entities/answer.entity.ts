@@ -19,10 +19,10 @@ export class Answer {
   studentAnswer!: string;
 
   @Column({ type: 'text', nullable: true })
-  answerText!: string;
+  answerText?: string; // Correct answer (stored by server for reference)
 
-  @Column({ type: 'tinyint', default: 0 })
-  isCorrect!: boolean;
+  @Column({ type: 'tinyint', default: 0, nullable: true })
+  isCorrect?: boolean; // Whether answer is correct (graded by server)
 
   @ManyToOne('ExamSession', 'answers')
   @JoinColumn({ name: 'examSessionId' })

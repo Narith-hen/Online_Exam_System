@@ -12,6 +12,7 @@ export class StudentController {
     this.login          = this.login.bind(this);
     this.startQuiz      = this.startQuiz.bind(this);
     this.submitQuiz     = this.submitQuiz.bind(this);
+    this.getQuestions   = this.getQuestions.bind(this);
     this.getResult      = this.getResult.bind(this);
     this.getMyResults   = this.getMyResults.bind(this);
   }
@@ -38,6 +39,16 @@ export class StudentController {
     try {
       const result = await this.studentService.submitQuiz(new SubmitQuizDto(req.body));
       res.status(200).json({ success: true, message: 'Quiz submitted successfully', data: result });
+    } catch (e: any) {
+      res.status(400).json({ success: false, message: e.message });
+    }
+  }
+
+  async getQuestions(req: Request, res: Response): Promise<void> {
+    try {
+      const examId = String(req.params.examId);
+      const questions = await this.studentService.getQuestions(examId);
+      res.status(200).json({ success: true, data: questions });
     } catch (e: any) {
       res.status(400).json({ success: false, message: e.message });
     }

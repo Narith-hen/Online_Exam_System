@@ -5,18 +5,23 @@ import { Student }     from '../entities/student.entity';
 import { ExamSession } from '../entities/ExamSession.entity';
 import { Answer }      from '../entities/Answer.entity';
 import { Result }      from '../entities/Result.entity';
+import { QuestionEntity, QuestionOptionEntity } from '../../teacher/entities/question.entity';
 
 export class StudentRepository {
   private studentRepo: Repository<Student>;
   private sessionRepo: Repository<ExamSession>;
   private answerRepo:  Repository<Answer>;
   private resultRepo:  Repository<Result>;
+  private questionRepo: Repository<QuestionEntity>;
+  private optionRepo: Repository<QuestionOptionEntity>;
 
   constructor() {
     this.studentRepo = AppDataSource.getRepository(Student);
     this.sessionRepo = AppDataSource.getRepository(ExamSession);
     this.answerRepo  = AppDataSource.getRepository(Answer);
     this.resultRepo  = AppDataSource.getRepository(Result);
+    this.questionRepo = AppDataSource.getRepository(QuestionEntity);
+    this.optionRepo = AppDataSource.getRepository(QuestionOptionEntity);
   }
 
   // ── LOGIN ─────────────────────────────────────────────────────────────────
@@ -75,7 +80,7 @@ export class StudentRepository {
   async saveAnswers(
     examSessionId: string,
     studentId: number,
-    answers: { questionId: string; studentAnswer: string; isCorrect: boolean; answerText: string }[]
+    answers: { questionId: string; studentAnswer: string; isCorrect?: boolean; answerText?: string }[]
   ): Promise<void> {
     const records = answers.map(a =>
       this.answerRepo.create({ ...a, examSessionId, studentId })
@@ -130,6 +135,24 @@ export class StudentRepository {
       .addSelect(['student.id', 'student.fullname', 'student.class', 'student.email']) // ← student name included
       .where('result.studentId = :studentId', { studentId })
       .orderBy('result.createAt', 'DESC')
+      .getMany();
+  }
+
+  // ── FETCH QUESTIONS ───────────────────────────────────────────────────────
+
+  async findQuestionById(questionId: string): Promise<QuestionEntity | null> {
+    return this.questionRepo
+      .createQueryBuilder('question')
+      .leftJoinAndSelect('question.options', 'options')
+      .where('question.id = :questionId', { questionId })
+      .getOne();
+  }
+
+  async findQuestionsByExamId(examId: string): Promise<QuestionEntity[]> {
+    return this.questionRepo
+      .createQueryBuilder('question')
+      .leftJoinAndSelect('question.options', 'options')
+      .where('question.examId = :examId', { examId })
       .getMany();
   }
 }
