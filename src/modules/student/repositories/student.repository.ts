@@ -132,4 +132,38 @@ export class StudentRepository {
       .orderBy('result.createAt', 'DESC')
       .getMany();
   }
+
+    // Delete all exam sessions (and related answers/results) for a given examId
+    async deleteSessionsByExamId(examId: string): Promise<void> {
+      // Find session ids for the exam
+      const sessions = await this.sessionRepo
+        .createQueryBuilder('session')
+        .select(['session.examSessionId'])
+        .where('session.examId = :examId', { examId })
+        .getRawMany();
+
+      const sessionIds = sessions.map((s: any) => s.session_examSessionId || s.examSessionId);
+      if (sessionIds.length === 0) return;
+
+      // Delete answers linked to these sessions
+      await this.answerRepo
+        .createQueryBuilder()
+        .delete()
+        .where('examSessionId IN (:...ids)', { ids: sessionIds })
+        .execute();
+
+      // Delete results linked to these sessions
+      await this.resultRepo
+        .createQueryBuilder()
+        .delete()
+        .where('examSessionId IN (:...ids)', { ids: sessionIds })
+        .execute();
+
+      // Delete the sessions
+      await this.sessionRepo
+        .createQueryBuilder()
+        .delete()
+        .where('examId = :examId', { examId })
+        .execute();
+    }
 }

@@ -9,11 +9,13 @@ import { ExamEntity } from "../entities/exam.entity";
 import { QuestionEntity } from "../entities/question.entity";
 import { CreateExamDto } from "../dto/create-exam.dto";
 import { CreateQuestionDto } from "../dto/question.dto";
+import { StudentRepository } from "../../student/repositories/student.repository";
 import { randomBytes, randomUUID } from "crypto";
 
 export class TeacherService {
   private readonly examRepository: Repository<ExamEntity>;
   private readonly questionRepository: Repository<QuestionEntity>;
+  private readonly studentRepository: StudentRepository;
 
   constructor(
     examRepository = AppDataSource.getRepository(ExamEntity),
@@ -21,6 +23,7 @@ export class TeacherService {
   ) {
     this.examRepository = examRepository;
     this.questionRepository = questionRepository;
+    this.studentRepository = new StudentRepository();
   }
 
   private getExamTitle(dto: CreateExamDto): string {
@@ -134,6 +137,10 @@ export class TeacherService {
 
   async deleteExam(examId: string): Promise<void> {
     const exam = await this.getExamById(examId);
+
+    // Remove any exam sessions (and related answers/results) to avoid foreign key constraints
+    await this.studentRepository.deleteSessionsByExamId(examId);
+
     await this.examRepository.remove(exam);
   }
 
