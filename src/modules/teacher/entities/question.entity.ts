@@ -1,11 +1,11 @@
 import {
-  Entity,
-  PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
-  UpdateDateColumn,
-  ManyToOne,
+  Entity,
   JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { ExamEntity } from './exam.entity';
 
@@ -32,13 +32,13 @@ export class QuestionEntity {
   @Column({ type: 'int' })
   marks: number;
 
+  @ManyToOne(() => ExamEntity, (exam) => exam.questions)
+  @JoinColumn({ name: 'examId', referencedColumnName: 'examId' })
+  exam: ExamEntity;
+
   @CreateDateColumn()
   createdAt: Date;
 
   @UpdateDateColumn()
   updatedAt: Date;
-
-  @ManyToOne(() => ExamEntity, (exam) => exam.questions)
-  @JoinColumn({ name: 'examId' })
-  exam: ExamEntity;
 }
