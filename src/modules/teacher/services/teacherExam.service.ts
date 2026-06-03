@@ -5,19 +5,19 @@ import {
 } from "@nestjs/common";
 import { Repository } from "typeorm";
 import { AppDataSource } from "../../../config/database.config";
-import { Exam } from "../entities/exam.entity";
-import { Question } from "../entities/question.entity";
+import { ExamEntity } from "../entities/exam.entity";
+import { QuestionEntity } from "../entities/question.entity";
 import { CreateExamDto } from "../dto/create-exam.dto";
-import { CreateQuestionDto } from "../dto/create-question.dto";
+import { CreateQuestionDto } from "../dto/question.dto";
 import { randomBytes, randomUUID } from "crypto";
 
 export class TeacherService {
-  private readonly examRepository: Repository<Exam>;
-  private readonly questionRepository: Repository<Question>;
+  private readonly examRepository: Repository<ExamEntity>;
+  private readonly questionRepository: Repository<QuestionEntity>;
 
   constructor(
-    examRepository = AppDataSource.getRepository(Exam),
-    questionRepository = AppDataSource.getRepository(Question)
+    examRepository = AppDataSource.getRepository(ExamEntity),
+    questionRepository = AppDataSource.getRepository(QuestionEntity)
   ) {
     this.examRepository = examRepository;
     this.questionRepository = questionRepository;
@@ -73,13 +73,13 @@ export class TeacherService {
     throw new BadRequestException("Could not generate a unique access code");
   }
 
-  async createExam(dto: CreateExamDto): Promise<Exam> {
+  async createExam(dto: CreateExamDto): Promise<ExamEntity> {
     const examCode = this.generateExamCode();
     const frontendUrl = process.env.FRONTEND_URL ?? "http://localhost:3000";
     const exam = this.examRepository.create({
       examId: randomUUID(),
       createdBy: dto.createdBy ?? null,
-      examTitle: this.getExamTitle(dto),
+      title: this.getExamTitle(dto),
       description: dto.description ?? null,
       durationMinutes: dto.durationMinutes ?? 60,
       startWindow: dto.startWindow ? new Date(dto.startWindow) : null,
@@ -93,12 +93,12 @@ export class TeacherService {
     return this.examRepository.save(exam);
   }
 
-  async updateExam(examId: string, dto: Partial<CreateExamDto>): Promise<Exam> {
+  async updateExam(examId: string, dto: Partial<CreateExamDto>): Promise<ExamEntity> {
     const exam = await this.getExamById(examId);
     const title = dto.examTitle ?? dto.title;
 
     if (title) {
-      exam.examTitle = title.trim();
+      exam.title = title.trim();
     }
 
     if (dto.description !== undefined) {
@@ -137,24 +137,28 @@ export class TeacherService {
     await this.examRepository.remove(exam);
   }
 
-  async addQuestion(examId: string, dto: CreateQuestionDto): Promise<Question> {
+  async addQuestion(examId: string, dto: CreateQuestionDto): Promise<QuestionEntity> {
     const exam = await this.examRepository.findOne({ where: { examId } });
     if (!exam) throw new NotFoundException("Exam not found");
 
-    if (!dto.options.includes(dto.correctAnswer)) {
-      throw new BadRequestException("Correct answer must match one of the 4 options");
-    }
+    const question = this.questionRepository.create({
+      examId,
+      questionText: dto.questionText,
+      questionType: dto.questionType,
+      questionOptions: dto.questionOptions ?? null,
+      correctAnswer: dto.correctAnswer,
+      marks: dto.marks,
+    });
 
-    const question = this.questionRepository.create({ ...dto, examId });
     return this.questionRepository.save(question);
   }
 
   async updateQuestion(
-    questionId: number,
+    questionId: string,
     dto: Partial<CreateQuestionDto>
-  ): Promise<Question> {
+  ): Promise<QuestionEntity> {
     const question = await this.questionRepository.findOne({
-      where: { id: questionId },
+      where: { questionId },
     });
     if (!question) throw new NotFoundException("Question not found");
 
@@ -162,38 +166,38 @@ export class TeacherService {
       question.questionText = dto.questionText;
     }
 
-    if (dto.options) {
-      question.options = dto.options;
+    if (dto.questionOptions !== undefined) {
+      question.questionOptions = dto.questionOptions ?? null;
     }
 
     if (dto.correctAnswer) {
-      const options = dto.options ?? question.options;
-      if (!options.includes(dto.correctAnswer)) {
-        throw new BadRequestException("Correct answer must match one of the 4 options");
-      }
       question.correctAnswer = dto.correctAnswer;
+    }
+
+    if (dto.marks !== undefined) {
+      question.marks = dto.marks;
     }
 
     return this.questionRepository.save(question);
   }
 
-  async deleteQuestion(questionId: number): Promise<void> {
+  async deleteQuestion(questionId: string): Promise<void> {
     const question = await this.questionRepository.findOne({
-      where: { id: questionId },
+      where: { questionId },
     });
     if (!question) throw new NotFoundException("Question not found");
 
     await this.questionRepository.remove(question);
   }
 
-  async getAllExams(): Promise<Exam[]> {
+  async getAllExams(): Promise<ExamEntity[]> {
     return this.examRepository.find({
       relations: { questions: true },
       order: { createdAt: "DESC" },
     });
   }
 
-  async getExamById(examId: string): Promise<Exam> {
+  async getExamById(examId: string): Promise<ExamEntity> {
     const exam = await this.examRepository.findOne({
       where: { examId },
     });
@@ -201,7 +205,7 @@ export class TeacherService {
     return exam;
   }
 
-  async getExamByCode(examCode: string): Promise<Exam> {
+  async getExamByCode(examCode: string): Promise<ExamEntity> {
     const exam = await this.examRepository.findOne({
       where: { examCode },
       relations: { questions: true },
@@ -210,7 +214,7 @@ export class TeacherService {
     return exam;
   }
 
-  async getExamByIdOrCode(value: string): Promise<Exam> {
+  async getExamByIdOrCode(value: string): Promise<ExamEntity> {
     const exam = await this.examRepository.findOne({
       where: [{ examId: value }, { examCode: value.toUpperCase() }],
     });
@@ -218,7 +222,7 @@ export class TeacherService {
     return exam;
   }
 
-  async getExamByAccessCode(accessCode: string): Promise<Exam> {
+  async getExamByAccessCode(accessCode: string): Promise<ExamEntity> {
     const exam = await this.examRepository.findOne({
       where: { accessCode: accessCode.toUpperCase() },
       relations: { questions: true },
@@ -227,7 +231,7 @@ export class TeacherService {
     return exam;
   }
 
-  async getExamByCodeOrAccessCode(code: string): Promise<Exam> {
+  async getExamByCodeOrAccessCode(code: string): Promise<ExamEntity> {
     const normalizedCode = code.toUpperCase();
     const exam = await this.examRepository.findOne({
       where: [{ examCode: normalizedCode }, { accessCode: normalizedCode }],
@@ -241,7 +245,7 @@ export class TeacherService {
     examIdOrCode: string,
     studentId?: string,
     requestedAccessCode?: string
-  ): Promise<{ accessCode: string; studentId?: string; examCode: string; examLink: string | null }> {
+    ): Promise<{ accessCode: string; studentId?: string; examCode: string | null; examLink: string | null }> {
     const exam = await this.getExamByIdOrCode(examIdOrCode);
 
     if (requestedAccessCode === undefined) {
@@ -264,7 +268,7 @@ export class TeacherService {
     return {
       accessCode: exam.accessCode,
       ...(studentId ? { studentId } : {}),
-      examCode: exam.examCode,
+      examCode: exam.examCode ?? null,
       examLink: exam.examLink,
     };
   }

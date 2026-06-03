@@ -105,7 +105,7 @@ export const createQuestion = async (req: Request, res: Response) => {
 
 export const updateQuestion = async (req: Request, res: Response) => {
   try {
-    const questionId = parseNumericId(req.params.questionId, 'questionId');
+    const questionId = parseParam(req.params.questionId, 'questionId');
     const question = await teacherExamService.updateQuestion(questionId, req.body);
     res.status(200).json({ message: 'Question updated', data: question });
   } catch (error) {
@@ -115,7 +115,7 @@ export const updateQuestion = async (req: Request, res: Response) => {
 
 export const deleteQuestion = async (req: Request, res: Response) => {
   try {
-    const questionId = parseNumericId(req.params.questionId, 'questionId');
+    const questionId = parseParam(req.params.questionId, 'questionId');
     await teacherExamService.deleteQuestion(questionId);
     res.status(200).json({ message: 'Question deleted' });
   } catch (error) {
