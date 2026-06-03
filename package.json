@@ -8,6 +8,7 @@
   },
   "scripts": {
     "dev": "nodemon --exec ts-node src/server.ts",
+    "migrate": "ts-node src/database/run-migrations.ts",
     "test": "jest",
     "build": "tsc",
     "start": "node dist/server.js",
