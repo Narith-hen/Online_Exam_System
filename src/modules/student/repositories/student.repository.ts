@@ -3,14 +3,8 @@ import { Repository } from 'typeorm';
 import { AppDataSource } from '../../../config/database.config';
 import { Student }     from '../entities/student.entity';
 import { ExamSession } from '../entities/ExamSession.entity';
-<<<<<<< HEAD
-import { Answer }      from '../entities/Answer.entity';
-import { Result }      from '../entities/Result.entity';
-import { QuestionEntity, QuestionOptionEntity } from '../../teacher/entities/question.entity';
-=======
 import { Answer }      from '../entities/answer.entity';
 import { Result }      from '../entities/result.entity';
->>>>>>> d21ca74a516eef5830aade19bf6366353651c9c0
 
 export class StudentRepository {
   private studentRepo: Repository<Student>;
@@ -143,25 +137,6 @@ export class StudentRepository {
       .getMany();
   }
 
-<<<<<<< HEAD
-  // ── FETCH QUESTIONS ───────────────────────────────────────────────────────
-
-  async findQuestionById(questionId: string): Promise<QuestionEntity | null> {
-    return this.questionRepo
-      .createQueryBuilder('question')
-      .leftJoinAndSelect('question.options', 'options')
-      .where('question.id = :questionId', { questionId })
-      .getOne();
-  }
-
-  async findQuestionsByExamId(examId: string): Promise<QuestionEntity[]> {
-    return this.questionRepo
-      .createQueryBuilder('question')
-      .leftJoinAndSelect('question.options', 'options')
-      .where('question.examId = :examId', { examId })
-      .getMany();
-  }
-=======
     // Delete all exam sessions (and related answers/results) for a given examId
     async deleteSessionsByExamId(examId: string): Promise<void> {
       // Find session ids for the exam
@@ -195,5 +170,4 @@ export class StudentRepository {
         .where('examId = :examId', { examId })
         .execute();
     }
->>>>>>> d21ca74a516eef5830aade19bf6366353651c9c0
 }
