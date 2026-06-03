@@ -1,0 +1,4 @@
+◇ injected env (10) from .env // tip: ⌘ enable debugging { debug: true }
+✅ MySQL Database connected successfully
+Database connected successfully
+Server running on http://localhost:3000

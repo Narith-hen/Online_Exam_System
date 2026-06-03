@@ -1,4 +1,3 @@
-import 'reflect-metadata'; // ← must be first line
 import app from './app';
 import { envConfig } from './config/env.config';
 import { DatabaseConfig } from './config/database.config';

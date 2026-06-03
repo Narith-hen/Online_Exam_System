@@ -3,9 +3,14 @@ import { Repository } from 'typeorm';
 import { AppDataSource } from '../../../config/database.config';
 import { Student }     from '../entities/student.entity';
 import { ExamSession } from '../entities/ExamSession.entity';
+<<<<<<< HEAD
 import { Answer }      from '../entities/Answer.entity';
 import { Result }      from '../entities/Result.entity';
 import { QuestionEntity, QuestionOptionEntity } from '../../teacher/entities/question.entity';
+=======
+import { Answer }      from '../entities/answer.entity';
+import { Result }      from '../entities/result.entity';
+>>>>>>> d21ca74a516eef5830aade19bf6366353651c9c0
 
 export class StudentRepository {
   private studentRepo: Repository<Student>;
@@ -138,6 +143,7 @@ export class StudentRepository {
       .getMany();
   }
 
+<<<<<<< HEAD
   // ── FETCH QUESTIONS ───────────────────────────────────────────────────────
 
   async findQuestionById(questionId: string): Promise<QuestionEntity | null> {
@@ -155,4 +161,39 @@ export class StudentRepository {
       .where('question.examId = :examId', { examId })
       .getMany();
   }
+=======
+    // Delete all exam sessions (and related answers/results) for a given examId
+    async deleteSessionsByExamId(examId: string): Promise<void> {
+      // Find session ids for the exam
+      const sessions = await this.sessionRepo
+        .createQueryBuilder('session')
+        .select(['session.examSessionId'])
+        .where('session.examId = :examId', { examId })
+        .getRawMany();
+
+      const sessionIds = sessions.map((s: any) => s.session_examSessionId || s.examSessionId);
+      if (sessionIds.length === 0) return;
+
+      // Delete answers linked to these sessions
+      await this.answerRepo
+        .createQueryBuilder()
+        .delete()
+        .where('examSessionId IN (:...ids)', { ids: sessionIds })
+        .execute();
+
+      // Delete results linked to these sessions
+      await this.resultRepo
+        .createQueryBuilder()
+        .delete()
+        .where('examSessionId IN (:...ids)', { ids: sessionIds })
+        .execute();
+
+      // Delete the sessions
+      await this.sessionRepo
+        .createQueryBuilder()
+        .delete()
+        .where('examId = :examId', { examId })
+        .execute();
+    }
+>>>>>>> d21ca74a516eef5830aade19bf6366353651c9c0
 }

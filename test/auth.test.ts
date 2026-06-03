@@ -3,9 +3,15 @@ import request from 'supertest';
 import app from '../src/server';
 
 describe('Auth routes', () => {
-  it('GET /api/auth returns module root', async () => {
-    const res = await request(app).get('/api/auth');
-    expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty('message', 'Auth module root');
+  it('POST /api/teachers/login rejects missing credentials', async () => {
+    const res = await request(app)
+      .post('/api/teachers/login')
+      .send({});
+
+    expect(res.status).toBe(401);
+    expect(res.body).toHaveProperty(
+      'message',
+      'Username, email, and password are required.',
+    );
   });
 });

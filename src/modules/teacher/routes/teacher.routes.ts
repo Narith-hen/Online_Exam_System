@@ -1,10 +1,16 @@
-import { Router, Request, Response } from 'express';
+import { Router } from "express";
+import { AuthController } from "../controllers/teacher.controller";
+import teacherExamRoutes from './teacherExam.routes';
 
 const router = Router();
+const teacherController = new AuthController();
 
-router.get('/', (req: Request, res: Response) => {
-	res.json({ message: 'Teacher module root' });
-});
+router.get('/', teacherController.teacherGetAll);
+
+router.post("/login", teacherController.teacherLogin);
+router.post("/register", teacherController.teacherRegister);
+router.post("/create", teacherController.teacherRegister);
+router.get("/results", teacherController.teacherShowResult);
+router.use('/exams', teacherExamRoutes);
 
 export default router;
-

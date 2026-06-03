@@ -1,5 +1,5 @@
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
-import { Roles } from '../../../constants/roles.enum';
+import { Role } from '../../../constants/roles.enum';
 
 @Entity('users')
 export class UserEntity {
@@ -15,8 +15,8 @@ export class UserEntity {
   @Column({ type: 'varchar', length: 255 })
   password!: string;
 
-  @Column({ type: 'enum', enum: Roles, default: Roles.STUDENT })
-  role!: Roles;
+  @Column({ type: 'enum', enum: Role, default: Role.student })
+  role!: Role;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt!: Date;

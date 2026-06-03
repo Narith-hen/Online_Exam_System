@@ -5,8 +5,8 @@ import path from 'node:path';
 // Import all entities explicitly
 import { Student } from '../modules/student/entities/student.entity';
 import { ExamSession } from '../modules/student/entities/ExamSession.entity';
-import { Answer } from '../modules/student/entities/Answer.entity';
-import { Result } from '../modules/student/entities/Result.entity';
+import { Answer } from '../modules/student/entities/answer.entity';
+import { Result } from '../modules/student/entities/result.entity';
 
 export const DB_NAME = envConfig.DB_NAME;
 
@@ -22,16 +22,21 @@ export class DatabaseConfig {
         port: envConfig.DB_PORT,
         username: envConfig.DB_USERNAME,
         password: envConfig.DB_PASSWORD,
-        database: DB_NAME,
-
-        entities: [Student, ExamSession, Answer, Result],
-        migrations: [path.join(rootDir, 'database', 'migrations', '*.{ts,js}')],
-
+        database: envConfig.DB_NAME,
+        
+        entities: [`${__dirname}/../modules/**/*.entity.{ts,js}`],
+        migrations: [`${__dirname}/../database/migrations/*.{ts,js}`],
+        
         synchronize: false,
         logging: envConfig.DB_LOGGING === true,
 
         charset: 'utf8mb4',
-        timezone: '+07:00',
+        timezone: '+07:00',               
+        extra: {
+          waitForConnections: true,
+          connectionLimit: envConfig.DB_CONNECTION_LIMIT,
+          queueLimit: envConfig.DB_QUEUE_LIMIT,
+        },
       });
     }
     return DatabaseConfig.dataSource;
@@ -51,4 +56,5 @@ export class DatabaseConfig {
   }
 }
 
+// Export for use in repositories
 export const AppDataSource = DatabaseConfig.getDataSource();
