@@ -5,6 +5,8 @@ import teacherExamRoutes from './teacherExam.routes';
 const router = Router();
 const teacherController = new AuthController();
 
+router.get('/', teacherController.teacherGetAll);
+
 router.post("/login", teacherController.teacherLogin);
 router.post("/register", teacherController.teacherRegister);
 router.post("/create", teacherController.teacherRegister);

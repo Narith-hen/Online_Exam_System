@@ -55,4 +55,24 @@ export class UserRepository {
       .orderBy("result.createAt", "DESC")
       .getRawMany();
   }
+
+    // Find all teachers
+    async findAllTeachers(): Promise<User[]> {
+      const roleId = process.env.TEACHER_ROLE_ID;
+      if (!roleId) return [];
+
+      return this.repository
+        .createQueryBuilder('user')
+        .where('user.roleId = :roleId', { roleId })
+        .select([
+          'user.userId',
+          'user.username',
+          'user.email',
+          'user.roleId',
+          'user.isActive',
+          'user.createAt',
+        ])
+        .orderBy('user.createAt', 'DESC')
+        .getMany();
+    }
 }

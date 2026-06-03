@@ -64,4 +64,12 @@ export class AuthService {
       user: userWithoutPassword,
     };
   }
+
+  async getAllTeachers() {
+    const teachers = await this.userRepository.findAllTeachers();
+    return {
+      message: 'Teachers fetched successfully',
+      data: teachers,
+    };
+  }
 }

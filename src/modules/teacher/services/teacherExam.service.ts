@@ -200,6 +200,7 @@ export class TeacherService {
   async getExamById(examId: string): Promise<ExamEntity> {
     const exam = await this.examRepository.findOne({
       where: { examId },
+      relations: { questions: true },
     });
     if (!exam) throw new NotFoundException("Exam not found");
     return exam;

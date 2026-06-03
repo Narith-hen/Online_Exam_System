@@ -43,4 +43,14 @@ export class AuthController {
             res.status(500).json({ message: error.message || 'Failed to fetch student results' });
         }
     };
+
+    // Get all teachers
+    teacherGetAll = async (req: Request, res: Response) => {
+        try {
+            const result = await this.authService.getAllTeachers();
+            res.status(200).json(result);
+        } catch (error: any) {
+            res.status(500).json({ message: error.message || 'Failed to fetch teachers' });
+        }
+    };
 }
