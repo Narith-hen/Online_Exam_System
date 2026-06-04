@@ -15,6 +15,9 @@ export class Student {
   @Column({ type: 'varchar', length: 100, unique: true })
   email!: string;
 
+  @Column({ type: 'boolean', default: false })
+  isLoggedIn!: boolean;
+
   @OneToMany('ExamSession', 'student')
   sessions!: any[];
 
