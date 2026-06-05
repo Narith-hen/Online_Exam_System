@@ -1,11 +1,9 @@
-// dto/student-login.dto.ts
 export class StudentLoginDto {
   fullname: string;
   class:    string;
   email:    string;
 
   constructor(body: any) {
-    // ── Required fields ───────────────────────────────────────────────────
     if (!body.fullname || !body.fullname.trim())
       throw new Error('fullname is required');
     if (!body.class || !body.class.trim())
@@ -13,7 +11,6 @@ export class StudentLoginDto {
     if (!body.email || !body.email.trim())
       throw new Error('email is required');
 
-    // ── Fullname validation ───────────────────────────────────────────────
     const fullname = body.fullname.trim();
     if (fullname.length < 2)
       throw new Error('fullname must be at least 2 characters');
@@ -24,14 +21,12 @@ export class StudentLoginDto {
     if (!/^[a-zA-Z\s]+$/.test(fullname))
       throw new Error('fullname must contain only letters and spaces');
 
-    // ── Class validation ──────────────────────────────────────────────────
     const studentClass = body.class.trim();
     if (studentClass.length < 1)
       throw new Error('class is required');
     if (studentClass.length > 50)
       throw new Error('class must not exceed 50 characters');
 
-    // ── Email validation ──────────────────────────────────────────────────
     const email = body.email.trim().toLowerCase();
     const emailRegex = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
     if (!emailRegex.test(email))

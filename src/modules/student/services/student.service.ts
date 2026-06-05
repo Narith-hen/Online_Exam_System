@@ -1,8 +1,8 @@
-// services/student.service.ts
 import { StudentRepository } from '../repositories/student.repository';
 import { StudentLoginDto }   from '../dto/student-login.dto';
 import { StartQuizDto }      from '../dto/start-quiz.dto';
 import { SubmitQuizDto }     from '../dto/submit-quiz.dto';
+import { Student }           from '../entities/student.entity';
 
 export class StudentService {
   private repo: StudentRepository;
@@ -11,15 +11,15 @@ export class StudentService {
     this.repo = new StudentRepository();
   }
 
-  // services/student.service.ts
-  async login(dto: StudentLoginDto) {
-    const student = await this.repo.findStudentByEmail(dto.email);
+  async login(dto: StudentLoginDto): Promise<Student> {
+    // Return type is Student — guarantees id is always present
+    const existing = await this.repo.findStudentByEmail(dto.email);
 
-    if (student) {
-      throw new Error("Can't login again");
+    if (existing) {
+      return existing;
     }
 
-    // ── new student — create only if all fields are valid ─────────────────
+    // New student — created and returned with DB-generated id
     const newStudent = await this.repo.createStudent({
       fullname: dto.fullname,
       class:    dto.class,
@@ -27,30 +27,50 @@ export class StudentService {
     });
 
     return newStudent;
-
-  return student;
- }
+  }
 
   async startQuiz(dto: StartQuizDto) {
     const student = await this.repo.findStudentById(dto.studentId);
     if (!student) throw new Error('Student not found');
 
+    // Guard: prevent duplicate active sessions for same exam
     return this.repo.createSession(dto.studentId, dto.examId);
   }
 
   async submitQuiz(dto: SubmitQuizDto) {
     const session = await this.repo.findSessionById(dto.examSessionId);
-    if (!session)                       throw new Error('Session not found');
-    if (session.status === 'submitted') throw new Error('Quiz already submitted');
+    if (!session)
+      throw new Error('Session not found');
+    if (session.status === 'submitted')
+      throw new Error('Quiz already submitted');
 
-    // ── get student info ───────────────────────────────────────────────────
     const student = await this.repo.findStudentById(session.studentId);
     if (!student) throw new Error('Student not found');
 
-    await this.repo.saveAnswers(dto.examSessionId, session.studentId, dto.answers);
+    // Fetch all questions and calculate correct/incorrect
+    const questionsMap = await this.repo.getQuestionsByExamId(session.examId);
+    
+    const answersWithCorrectFlag = dto.answers.map(a => {
+      const question = questionsMap.get(a.questionId);
+      if (!question) {
+        throw new Error(`Question ${a.questionId} not found`);
+      }
 
-    const correct    = dto.answers.filter(a => a.isCorrect).length;
-    const total      = dto.answers.length;
+      const isCorrect = a.studentAnswer.toLowerCase().trim() === 
+                       question.correctAnswer.toLowerCase().trim();
+
+      return {
+        questionId:    a.questionId,
+        studentAnswer: a.studentAnswer,
+        isCorrect,
+        answerText:    question.correctAnswer,
+      };
+    });
+
+    await this.repo.saveAnswers(dto.examSessionId, session.studentId, answersWithCorrectFlag);
+
+    const correct    = answersWithCorrectFlag.filter(a => a.isCorrect).length;
+    const total      = answersWithCorrectFlag.length;
     const percentAge = (correct / total) * 100;
     const isPassed   = percentAge >= 50;
     const grade      = percentAge >= 90 ? 'A'
@@ -70,7 +90,6 @@ export class StudentService {
 
     await this.repo.updateSessionStatus(dto.examSessionId, 'submitted');
 
-    // ── return result with student name ────────────────────────────────────
     return {
       resultId:      result.resultId,
       examSessionId: result.examSessionId,

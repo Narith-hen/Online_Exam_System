@@ -1,30 +1,29 @@
-// entities/ExamSession.entity.ts
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 
 @Entity('examsession')
 export class ExamSession {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn('uuid', { name: 'examSessionId' })
   examSessionId!: string;
 
-  @Column({ type: 'char', length: 36 })
+  @Column({ name: 'examId', type: 'char', length: 36 })
   examId!: string;
 
-  @Column({ type: 'int' })
+  @Column({ name: 'studentId', type: 'int' })
   studentId!: number;
 
-  @Column({ type: 'varchar', length: 255, nullable: true })
+  @Column({ name: 'deviceFingerPrint', type: 'varchar', length: 255, nullable: true })
   deviceFingerPrint!: string;
 
   @Column({ type: 'enum', enum: ['pending', 'in_progress', 'submitted', 'expired'], default: 'pending' })
   status!: string;
 
-  @Column({ nullable: true })
+  @Column({ name: 'startedAt', nullable: true })
   startedAt!: Date;
 
-  @Column({ nullable: true })
+  @Column({ name: 'expiresAt', nullable: true })
   expiresAt!: Date;
 
-  @Column({ nullable: true })
+  @Column({ name: 'submittedAt', nullable: true })
   submittedAt!: Date;
 
   @OneToMany('Answer', 'session')
