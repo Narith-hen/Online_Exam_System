@@ -66,26 +66,32 @@ export class StudentController {
   }
 
   // 🔒 Protected — token required
-  async startQuiz(req: Request, res: Response): Promise<void> {
-    try {
-      const student = (req as AuthRequest).student; // ✅ from token
+   async startQuiz(req: Request, res: Response): Promise<void> {
+  try {
+    const student = (req as AuthRequest).student;
 
-      const result = await this.studentService.startQuiz(
-        new StartQuizDto({
-          ...req.body,
-          studentId: student.id, // ✅ always from token, never from body
-        })
-      );
-
-      res.status(201).json({
-        success: true,
-        message: 'Quiz started successfully',
-        data:    result,
-      });
-    } catch (e: any) {
-      res.status(400).json({ success: false, message: e.message });
+    // 🔒 Block if studentId in body doesn't match token
+    if (req.body.studentId && req.body.studentId !== student.id) {
+      res.status(403).json({ success: false, message: 'Unauthorized: studentId does not match token' });
+      return;
     }
+
+    const result = await this.studentService.startQuiz(
+      new StartQuizDto({
+        ...req.body,
+        studentId: student.id, // always from token
+      })
+    );
+
+    res.status(201).json({
+      success: true,
+      message: 'Quiz started successfully',
+      data:    result,
+    });
+  } catch (e: any) {
+    res.status(400).json({ success: false, message: e.message });
   }
+}
 
   // 🔒 Protected — token required
    async submitQuiz(req: Request, res: Response): Promise<void> {
