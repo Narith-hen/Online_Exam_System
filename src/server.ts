@@ -1,6 +1,7 @@
 import app from './app';
 import { envConfig } from './config/env.config';
 import { DatabaseConfig } from './config/database.config';
+import './types/express';
 
 const port = envConfig.PORT || 3000;
 

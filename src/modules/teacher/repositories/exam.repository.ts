@@ -1,73 +1,80 @@
 import { AppDataSource } from '../../../config/database.config';
 import { ExamEntity } from '../entities/exam.entity';
 import { QuestionEntity } from '../entities/question.entity';
+import { Answer } from '../entities/answer.entity';
 
-export class ExamRepository {
-  private repository = AppDataSource.getRepository(ExamEntity);
+export class ExamRepository2 {
+  examRepository = AppDataSource.getRepository(ExamEntity);
+  questionRepository = AppDataSource.getRepository(QuestionEntity);
+  answerRepository = AppDataSource.getRepository(Answer);
 
-  async findAllWithQuestions(): Promise<ExamEntity[]> {
-    return this.repository.find({
-      relations: { questions: true },
-      order: { createdAt: 'DESC' },
-    });
+  async findAll() {
+    return this.examRepository.find({ relations: { questions: true } });
   }
 
-  async findByIdWithQuestions(examId: string): Promise<ExamEntity | null> {
-    return this.repository.findOne({
-      where: { examId },
-      relations: { questions: true },
-    });
+  async findById(examId: string) {
+    return this.examRepository.findOne({ where: { examId }, relations: { questions: true } });
   }
 
-  async findById(examId: string): Promise<ExamEntity | null> {
-    return this.repository.findOne({ where: { examId } });
+  async create(examData: Partial<ExamEntity>) {
+    const exam = this.examRepository.create(examData);
+    return this.examRepository.save(exam);
   }
 
-  create(data: Partial<ExamEntity>): ExamEntity {
-    return this.repository.create(data);
+  async update(examId: string, examData: Partial<ExamEntity>) {
+    const exam = await this.examRepository.findOne({ where: { examId } });
+    if (!exam) return null;
+    this.examRepository.merge(exam, examData);
+    return this.examRepository.save(exam);
   }
 
-  async save(exam: ExamEntity): Promise<ExamEntity> {
-    return this.repository.save(exam);
+  async delete(examId: string) {
+    const exam = await this.examRepository.findOne({ where: { examId } });
+    if (!exam) return false;
+    await this.examRepository.remove(exam);
+    return true;
   }
 
-  async update(exam: ExamEntity, data: Partial<ExamEntity>): Promise<ExamEntity> {
-    this.repository.merge(exam, data);
-    return this.repository.save(exam);
+  async deleteWithQuestions(examId: string) {
+    await this.questionRepository.delete({ examId: examId as any });
+    return this.delete(examId);
   }
 
-  async deleteWithQuestions(examId: string): Promise<boolean> {
-    const queryRunner = AppDataSource.createQueryRunner();
+  async addQuestion(examId: string, questionData: Partial<QuestionEntity>) {
+    const question = this.questionRepository.create({ ...questionData, examId: examId as any });
+    return this.questionRepository.save(question);
+  }
 
-    try {
-      await queryRunner.connect();
-      await queryRunner.startTransaction();
+  async updateQuestion(questionId: string, questionData: Partial<QuestionEntity>) {
+    const question = await this.questionRepository.findOne({ where: { questionId: questionId as any } });
+    if (!question) return null;
+    this.questionRepository.merge(question, questionData);
+    return this.questionRepository.save(question);
+  }
 
-      const exam = await queryRunner.manager.findOne(ExamEntity, { where: { examId } });
-      if (!exam) {
-        await queryRunner.rollbackTransaction();
-        return false;
-      }
+  async deleteQuestion(questionId: string) {
+    const question = await this.questionRepository.findOne({ where: { questionId: questionId as any } });
+    if (!question) return false;
+    await this.questionRepository.remove(question);
+    return true;
+  }
 
-      await queryRunner.manager.delete(QuestionEntity, { examId });
-      const result = await queryRunner.manager.delete(ExamEntity, { examId });
+  async addAnswer(questionId: string, answerData: Partial<Answer>) {
+    const answer = this.answerRepository.create({ ...answerData, questionId: questionId as any });
+    return this.answerRepository.save(answer);
+  }
 
-      if (!result.affected) {
-        await queryRunner.rollbackTransaction();
-        return false;
-      }
+  async updateAnswer(answerId: string, answerData: Partial<Answer>) {
+    const answer = await this.answerRepository.findOne({ where: { answerId: answerId as any } });
+    if (!answer) return null;
+    this.answerRepository.merge(answer, answerData);
+    return this.answerRepository.save(answer);
+  }
 
-      await queryRunner.commitTransaction();
-      return true;
-    } catch (error) {
-      if (queryRunner.isTransactionActive) {
-        await queryRunner.rollbackTransaction();
-      }
-      throw error;
-    } finally {
-      if (!queryRunner.isReleased) {
-        await queryRunner.release();
-      }
-    }
+  async deleteAnswer(answerId: string) {
+    const answer = await this.answerRepository.findOne({ where: { answerId: answerId as any } });
+    if (!answer) return false;
+    await this.answerRepository.remove(answer);
+    return true;
   }
 }

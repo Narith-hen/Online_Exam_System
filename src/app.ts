@@ -3,8 +3,8 @@ import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
 
+
 import teacherRoutes from './modules/teacher/routes/teacher.routes';
-import teacherExamRoutes from './modules/teacher/routes/teacherExam.routes';
 import studentRoutes from './modules/student/routes/student.routes';
 import dashboardRoutes from './modules/dashboard/routes/dashboard.routes';
 
@@ -24,7 +24,9 @@ class App {
   }
 
   private initializeMiddlewares(): void {
-    this.app.use(helmet());
+    this.app.use(helmet({
+      contentSecurityPolicy: false,
+    }));
     this.app.use(cors());
     this.app.use(compression());
     this.app.use(express.json());
@@ -42,7 +44,6 @@ class App {
     });
 
     this.app.use('/api/teachers', teacherRoutes);
-    this.app.use('/api/teachers/exams', teacherExamRoutes);
     this.app.use('/api/students', studentRoutes);
     this.app.use('/api/dashboard', dashboardRoutes);
 
