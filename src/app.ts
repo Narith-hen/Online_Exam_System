@@ -19,8 +19,8 @@ class App {
     this.app = express();
 
     this.initializeMiddlewares();
-    this.initializeRoutes();
     this.initializeInterceptors();
+    this.initializeRoutes();
   }
 
   private initializeMiddlewares(): void {
