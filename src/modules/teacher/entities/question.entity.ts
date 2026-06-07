@@ -34,6 +34,9 @@ export class QuestionEntity {
   @Column({ type: 'int' })
   marks: number;
 
+  @Column({ type: 'boolean', default: true })
+  isRequired: boolean;
+
   @ManyToOne(() => ExamEntity, (exam) => exam.questions)
   @JoinColumn({ name: 'examId', referencedColumnName: 'examId' })
   exam: ExamEntity;

@@ -2,10 +2,10 @@ import { Request, Response } from 'express';
 import { randomUUID } from 'node:crypto';
 import { ExamEntity } from '../entities/exam.entity';
 import { QuestionEntity } from '../entities/question.entity';
-import { ExamRepository } from '../repositories/exam.repository';
+import { ExamRepository2 } from '../repositories/exam.repository';
 import { QuestionRepository } from '../repositories/question.repository';
 
-const examRepository = new ExamRepository();
+const examRepository = new ExamRepository2();
 const questionRepository = new QuestionRepository();
 
 // ==================== SHARED HELPERS ====================
@@ -173,7 +173,7 @@ export const updateExam = async (req: Request, res: Response): Promise<void> => 
       return;
     }
 
-    const updatedExam = await examRepository.update(exam, updateBody);
+    const updatedExam = await examRepository.update(exam.examId, updateBody);
 
     res.status(200).json({ message: 'Exam updated successfully', data: updatedExam });
   } catch (error) {

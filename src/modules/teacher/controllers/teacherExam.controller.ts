@@ -145,7 +145,7 @@ export const getStudentResult = async (req: Request, res: Response) => {
 
 export const generateStudentCode = async (req: Request, res: Response) => {
   try {
-    const examIdOrCode = parseParam(req.params.examId, 'examId');
+    const examIdOrCode = parseParam(req.params.examCode, 'examCode');
     // const examIdOrCode = parseParam(req.params.examCode, 'examCode');
     const studentId =
       typeof req.body?.studentId === 'string' && req.body.studentId.trim()

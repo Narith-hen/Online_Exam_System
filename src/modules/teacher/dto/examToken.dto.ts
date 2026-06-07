@@ -25,6 +25,7 @@ export interface CreateQuestionDto {
   questionOptions?: string;
   correctAnswer : string;
   marks         ?: number;
+  isRequired    ?: boolean;
 }
 
 export interface UpdateQuestionDto {
@@ -33,6 +34,7 @@ export interface UpdateQuestionDto {
   questionOptions?: string;
   correctAnswer ?: string;
   marks         ?: number;
+  isRequired    ?: boolean;
 }
 
 // ─── Answer ────────────────────────────────────────────────────────────────

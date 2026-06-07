@@ -12,12 +12,23 @@ export class ExamRepository2 {
     return this.examRepository.find({ relations: { questions: true } });
   }
 
+  async findAllWithQuestions() {
+    return this.examRepository.find({ relations: { questions: true } });
+  }
+
   async findById(examId: string) {
     return this.examRepository.findOne({ where: { examId }, relations: { questions: true } });
   }
 
-  async create(examData: Partial<ExamEntity>) {
-    const exam = this.examRepository.create(examData);
+  async findByIdWithQuestions(examId: string) {
+    return this.examRepository.findOne({ where: { examId }, relations: { questions: true } });
+  }
+
+  create(examData: Partial<ExamEntity>): ExamEntity {
+    return this.examRepository.create(examData);
+  }
+
+  async save(exam: ExamEntity) {
     return this.examRepository.save(exam);
   }
 
@@ -41,7 +52,7 @@ export class ExamRepository2 {
   }
 
   async addQuestion(examId: string, questionData: Partial<QuestionEntity>) {
-    const question = this.questionRepository.create({ ...questionData, examId: examId as any });
+    const question = this.questionRepository.create({ ...questionData, examId: examId as any, isRequired: questionData.isRequired ?? true });
     return this.questionRepository.save(question);
   }
 

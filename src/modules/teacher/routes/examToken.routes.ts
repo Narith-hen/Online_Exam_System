@@ -15,12 +15,4 @@ router.post('/', controller.createExam);
 router.put('/:examId', controller.updateExam);
 router.delete('/:examId', controller.deleteExam);
 
-router.post('/:examId/questions', controller.createQuestion);
-router.put('/:examId/questions/:questionId', controller.updateQuestion);
-router.delete('/:examId/questions/:questionId', controller.deleteQuestion);
-
-router.post('/:examId/questions/:questionId/answers', controller.createAnswer);
-router.put('/:examId/questions/:questionId/answers/:answerId', controller.updateAnswer);
-router.delete('/:examId/questions/:questionId/answers/:answerId', controller.deleteAnswer);
-
 export default router;

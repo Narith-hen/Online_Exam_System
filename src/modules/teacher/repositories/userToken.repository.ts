@@ -15,7 +15,6 @@ export class UserRepository {
   findAllTeachers() {
     return this.repo.find({
       where: { roleId: process.env.TEACHER_ROLE_ID },
-      select: ['userId', 'username', 'email', 'isActive', 'createAt'],
     });
   }
  

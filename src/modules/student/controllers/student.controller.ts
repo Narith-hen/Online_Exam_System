@@ -68,10 +68,11 @@ export class StudentController {
   // 🔒 Protected — token required
    async startQuiz(req: Request, res: Response): Promise<void> {
   try {
-    const student = (req as AuthRequest).student;
+    const student = (req as any).user;
+
 
     // 🔒 Block if studentId in body doesn't match token
-    if (req.body.studentId && req.body.studentId !== student.id) {
+    if (req.body.studentId && String (req.body.studentId) !== student.id) {
       res.status(403).json({ success: false, message: 'Unauthorized: studentId does not match token' });
       return;
     }
@@ -97,7 +98,7 @@ export class StudentController {
    async submitQuiz(req: Request, res: Response): Promise<void> {
   try {
     console.log('req.body:', JSON.stringify(req.body));           // ← add
-    const student = (req as AuthRequest).student;
+    const student = (req as any).user;
     console.log('student from token:', JSON.stringify(student));  // ← add
 
     const result = await this.studentService.submitQuiz(
