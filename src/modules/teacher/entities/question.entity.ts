@@ -4,10 +4,12 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { ExamEntity } from './exam.entity';
+import { Answer } from './answer.entity';
 
 @Entity('questions')
 export class QuestionEntity {
@@ -32,9 +34,15 @@ export class QuestionEntity {
   @Column({ type: 'int' })
   marks: number;
 
+  @Column({ type: 'boolean', default: true })
+  isRequired: boolean;
+
   @ManyToOne(() => ExamEntity, (exam) => exam.questions)
   @JoinColumn({ name: 'examId', referencedColumnName: 'examId' })
   exam: ExamEntity;
+
+  @OneToMany(() => Answer, (answer) => answer.question)
+  answers: Answer[];
 
   @CreateDateColumn()
   createdAt: Date;

@@ -154,7 +154,8 @@ export class TeacherService {
       questionType: dto.questionType,
       questionOptions: dto.questionOptions ?? null,
       correctAnswer: dto.correctAnswer,
-      marks: dto.marks,
+      marks: dto.marks ?? 1,
+      isRequired: dto.isRequired ?? true,
     });
 
     return this.questionRepository.save(question);
@@ -183,6 +184,10 @@ export class TeacherService {
 
     if (dto.marks !== undefined) {
       question.marks = dto.marks;
+    }
+
+    if (dto.isRequired !== undefined) {
+      question.isRequired = dto.isRequired;
     }
 
     return this.questionRepository.save(question);

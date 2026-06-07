@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 import { randomUUID } from 'node:crypto';
-import { ExamRepository } from '../repositories/exam.repository';
+import { ExamRepository2 } from '../repositories/exam.repository';
 import { QuestionRepository } from '../repositories/question.repository';
 
-const examRepository = new ExamRepository();
+const examRepository = new ExamRepository2();
 const questionRepository = new QuestionRepository();
 
 // ==================== HELPERS ====================
@@ -58,6 +58,7 @@ export const createQuestion = async (req: Request, res: Response): Promise<void>
       questionOptions: req.body.questionOptions ?? null,
       correctAnswer: req.body.correctAnswer ?? '',
       marks: Number(req.body.marks ?? 1),
+      isRequired: req.body.isRequired ?? true,
     });
 
     res.status(201).json({

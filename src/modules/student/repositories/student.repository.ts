@@ -87,19 +87,16 @@ export class StudentRepository {
   }
 
   async findSessionById(examSessionId: string): Promise<ExamSession | null> {
-    return this.sessionRepo
-      .createQueryBuilder('session')
-      .select([
-        'session.examSessionId',
-        'session.status',
-        'session.studentId',
-        'session.examId',
-        'session.startedAt',
-        'session.expiresAt',
-      ])
-      .where('session.examSessionId = :examSessionId', { examSessionId })
-      .getOne();
-  }
+  console.log('Looking for session:', examSessionId);
+  
+  const result = await this.sessionRepo
+    .createQueryBuilder('session')
+    .where('session.examSessionId = :examSessionId', { examSessionId })
+    .getOne();
+    
+  console.log('Found session:', result);
+  return result;
+}
 
   async findSessionByStudentId(studentId: number): Promise<ExamSession | null> {
     return this.sessionRepo
@@ -110,6 +107,21 @@ export class StudentRepository {
   }
 
   // ── SUBMIT QUIZ ───────────────────────────────────────────────────────────
+
+  async getQuestionsByExamId(examId: string): Promise<Map<string, { correctAnswer: string }>> {
+    const questionRepo = AppDataSource.getRepository('QuestionEntity');
+    const questions = await questionRepo
+      .createQueryBuilder('q')
+      .select(['q.questionId', 'q.correctAnswer'])
+      .where('q.examId = :examId', { examId })
+      .getMany();
+
+    const map = new Map<string, { correctAnswer: string }>();
+    questions.forEach((q: any) => {
+      map.set(q.questionId, { correctAnswer: q.correctAnswer });
+    });
+    return map;
+  }
 
   async saveAnswers(
     examSessionId: string,

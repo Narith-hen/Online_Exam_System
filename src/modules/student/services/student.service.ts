@@ -5,6 +5,7 @@ import { StudentLoginDto }   from '../dto/student-login.dto';
 import { StartQuizDto }      from '../dto/start-quiz.dto';
 import { SubmitQuizDto }     from '../dto/submit-quiz.dto';
 import { QuestionEntity }    from '../../teacher/entities/question.entity';
+import { Student }           from '../entities/student.entity';
 
 export class StudentService {
   private repo: StudentRepository;
@@ -58,46 +59,45 @@ export class StudentService {
 
   async submitQuiz(dto: SubmitQuizDto) {
     const session = await this.repo.findSessionById(dto.examSessionId);
-    if (!session) throw new Error('Session not found');
-    if (session.status === 'submitted') throw new Error('Quiz already submitted');
+    if (!session)
+      throw new Error('Session not found');
+    if (session.status === 'submitted')
+      throw new Error('Quiz already submitted');
 
     const student = await this.repo.findStudentById(session.studentId);
     if (!student) throw new Error('Student not found');
 
-    const questions = await this.repo.findQuestionsByExamId(session.examId);
-    if (!questions || questions.length === 0) throw new Error('Exam questions not found');
-
-    // isCorrect and answerText kept internally for grading only
-    const gradedAnswers = dto.answers.map(answer => {
-      const question = questions.find(q => q.questionId === answer.questionId);
+    // Fetch all questions and calculate correct/incorrect
+    const questionsMap = await this.repo.getQuestionsByExamId(session.examId);
+    
+    const answersWithCorrectFlag = dto.answers.map(a => {
+      const question = questionsMap.get(a.questionId);
       if (!question) {
-        throw new Error(`Question ${answer.questionId} not found in exam`);
+        throw new Error(`Question ${a.questionId} not found`);
       }
 
-      const studentAnswer = answer.studentAnswer ?? '';
-      const optionId = (answer as any).optionId;
-      const isCorrect = this.compareAnswer(studentAnswer, optionId, question);
-      const answerText = question.correctAnswer;
+      const isCorrect = a.studentAnswer.toLowerCase().trim() === 
+                       question.correctAnswer.toLowerCase().trim();
 
       return {
-        questionId: answer.questionId,
-        studentAnswer,
+        questionId:    a.questionId,
+        studentAnswer: a.studentAnswer,
         isCorrect,
-        answerText,
+        answerText:    question.correctAnswer,
       };
     });
 
-    const correct = gradedAnswers.filter((ans) => ans.isCorrect).length;
-    const total = gradedAnswers.length;
-    const percentAge = total === 0 ? 0 : (correct / total) * 100;
-    const isPassed = percentAge >= 50;
-    const grade = percentAge >= 90 ? 'A'
-                : percentAge >= 80 ? 'B'
-                : percentAge >= 70 ? 'C'
-                : percentAge >= 60 ? 'D'
-                : 'F';
+    await this.repo.saveAnswers(dto.examSessionId, session.studentId, answersWithCorrectFlag);
 
-    await this.repo.saveAnswers(dto.examSessionId, session.studentId, gradedAnswers);
+    const correct    = answersWithCorrectFlag.filter(a => a.isCorrect).length;
+    const total      = answersWithCorrectFlag.length;
+    const percentAge = (correct / total) * 100;
+    const isPassed   = percentAge >= 50;
+    const grade      = percentAge >= 90 ? 'A'
+                     : percentAge >= 80 ? 'B'
+                     : percentAge >= 70 ? 'C'
+                     : percentAge >= 60 ? 'D'
+                     : 'F';
 
     const result = await this.repo.saveResult({
       examSessionId: dto.examSessionId,
